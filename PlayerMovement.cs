@@ -20,6 +20,10 @@ public class PlayerMovement : MonoBehaviour
             jump = true;
             animator.SetBool("IsJumping", true);
         }
+        if (Input.GetButtonDown("Fire1"))
+        {
+            playerShooting.Shoot();
+        }
     }
     private void FixedUpdate()
     {
@@ -37,5 +41,9 @@ public class PlayerMovement : MonoBehaviour
     public void CheckVerticalSpeed(float verticalSpeed)
     {
         animator.SetFloat("VerticalSpeed", verticalSpeed);
+    }
+    public void TriggerWeapon()
+    {
+        animator.SetTrigger("Shooting");
     }
 }
