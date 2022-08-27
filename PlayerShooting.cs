@@ -7,14 +7,27 @@ public class PlayerShooting : MonoBehaviour
 {
     public Transform[] firepoints = new Transform[3];
     public GameObject bulletPrefab;
-    public float cadencyShot = 1f;
+    public float cadencyShot = 0.4f;
     float nextShotTime = 0f;
+    int stateIndex;
 
     public UnityEvent OnWeaponTriggered;
 
-    delegate void OnPlayerShooting();
+    delegate void OnPlayerShooting(int stateIndex);
     OnPlayerShooting OnTriggerInMovement;
 
+    int StateIndex
+    {
+        set
+        {
+            stateIndex = value;
+            if (value != 0)
+            {
+                OnTriggerInMovement += ShotInState;
+                OnTriggerInMovement?.Invoke(value);
+            }
+        }
+    }
     bool IsShotPrepared
     {
         get
@@ -28,31 +41,12 @@ public class PlayerShooting : MonoBehaviour
         {
             if (value)
             {
-                PrepareShot = true;
-            }
-            else
-            {
-                OnTriggerInMovement?.Invoke();
-            }
-        }
-    }
-
-    bool PrepareShot
-    {
-        set
-        {
-            if (value)
-            {
-                StandShotSM.OnStandShotAction += OnEnterStandShotState;
-                RunAndShotSM.OnRunAndShotAction += OnEnterRunAndShotState;
-                OnAirShotSM.OnAirShotAction += OnEnterOnAirShotState;
+                PlayerShootingSM.OnStateAction += GetShotState;
                 OnWeaponTriggered.Invoke();
             }
             else
             {
-                StandShotSM.OnStandShotAction -= OnEnterStandShotState;
-                RunAndShotSM.OnRunAndShotAction -= OnEnterRunAndShotState;
-                OnAirShotSM.OnAirShotAction -= OnEnterOnAirShotState;
+                OnTriggerInMovement?.Invoke(stateIndex);
             }
         }
     }
@@ -64,51 +58,24 @@ public class PlayerShooting : MonoBehaviour
         CanPrepareShot = !IsShotPrepared;
     }
 
-
-    void OnEnterStandShotState()
+    void ShotInState(int stateIndex)
     {
-        PrepareShot = false;
-        StandShotSM.OnStandShotAction += OnExitStandShotState;
+        Instantiate(bulletPrefab, firepoints[stateIndex].position, firepoints[stateIndex].rotation);
     }
-    void OnExitStandShotState()
+    void GetShotState(int stateIndex)
     {
-        StandShotSM.OnStandShotAction -= OnExitStandShotState;
+        StateIndex = stateIndex;
+        PlayerShootingSM.OnShotAction += ExitShotState;
+        PlayerShootingSM.OnStateAction -= GetShotState;
     }
-    void OnEnterRunAndShotState()
+    void ExitShotState()
     {
-        PrepareShot = false;
-        OnTriggerInMovement += RunAndShot;
-        OnTriggerInMovement.Invoke();
-        RunAndShotSM.OnRunAndShotAction += OnExitSRunAndShotState;
-    }
-    void OnExitSRunAndShotState()
-    {
-        OnTriggerInMovement -= RunAndShot;
-        RunAndShotSM.OnRunAndShotAction -= OnExitSRunAndShotState;
-    }
-    void OnEnterOnAirShotState()
-    {
-        PrepareShot = false;
-        OnTriggerInMovement += OnAirShot;
-        OnTriggerInMovement.Invoke();
-        OnAirShotSM.OnAirShotAction += OnExitOnAirShotState;
-    }
-    void OnExitOnAirShotState()
-    {
-        OnTriggerInMovement -= OnAirShot;
-        OnAirShotSM.OnAirShotAction -= OnExitOnAirShotState;
+        OnTriggerInMovement -= ShotInState;
+        PlayerShootingSM.OnShotAction -= ExitShotState;
     }
 
     void StandShot()
     {
         Instantiate(bulletPrefab, firepoints[0].position, firepoints[0].rotation);
-    }
-    void RunAndShot()
-    {
-        Instantiate(bulletPrefab, firepoints[1].position, firepoints[1].rotation);
-    }
-    void OnAirShot()
-    {
-        Instantiate(bulletPrefab, firepoints[2].position, firepoints[2].rotation);
     }
 }

@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StandShotSM : StateMachineBehaviour
+public class OnAirShotSM : PlayerShootingSM
 {
-    public delegate void StandShotAction();
-    public static event StandShotAction OnStandShotAction;
-    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+    public override int ShootingStateIndex
+    {
+        get
+        {
+            return 2;
+        }
+    }
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        OnStandShotAction?.Invoke();
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        animator.SetBool("AirShot", true);
     }
 
-    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
     //    
@@ -21,6 +25,7 @@ public class StandShotSM : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        OnStandShotAction?.Invoke();
+        base.OnStateExit(animator, stateInfo, layerIndex);
+        animator.SetBool("AirShot", false);
     }
 }

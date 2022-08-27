@@ -7,32 +7,35 @@ public class AimManager : MonoBehaviour
     public Transform[] firepoints = new Transform[3];
     public Transform aimTransform;
     public Camera cam;
-    public float distanceToAim = 5f;
+    public float distanceToAim = 2f;
 
-    bool IsPlayerFacingToRight
+    public delegate void AimMovement(Transform[] firepoints, Camera cam, Transform aimTransform, float aimDistance, float playerLookMouse);
+    public static event AimMovement OnPlayerAim;
+
+    float IsPlayerFacingToRight
     {
         get
         {
-            return Mathf.Sign(transform.rotation.y) == 1;
+            return Mathf.Sign(transform.rotation.y);
         }
     }
-    bool IsMouseRightOfPlayer
+    float IsMouseRightOfPlayer
     {
         get
         {
-            return Mathf.Sign(cam.ScreenToWorldPoint(Input.mousePosition).x - transform.position.x) == 1;
+            return Mathf.Sign(cam.ScreenToWorldPoint(Input.mousePosition).x - transform.position.x);
         }
     }
-    bool IsPlayerLookToMouse
+    float IsPlayerLookToMouse
     {
         get
         {
-            return IsPlayerFacingToRight == IsMouseRightOfPlayer;
+            return IsPlayerFacingToRight * IsMouseRightOfPlayer;
         }
     }
 
     void Update()
     {
-        Debug.Log(IsPlayerLookToMouse);
+        OnPlayerAim?.Invoke(firepoints, cam, aimTransform, distanceToAim, IsPlayerLookToMouse);
     }
 }
