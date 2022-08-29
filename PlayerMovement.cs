@@ -10,6 +10,17 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 40f;
     float horizontalMove = 0f;
     bool jump = false;
+    bool IsShootingTriggerOn
+    {
+        set
+        {
+            if (value)
+            {
+                animator.SetTrigger("Shooting");
+            }
+            playerShooting.Shoot();
+        }
+    }
     void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
@@ -20,9 +31,9 @@ public class PlayerMovement : MonoBehaviour
             jump = true;
             animator.SetBool("IsJumping", true);
         }
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && playerShooting.IsWeaponReloaded)
         {
-            playerShooting.Shoot();
+            IsShootingTriggerOn = !playerShooting.IsShootingInSameMovement;
         }
     }
     private void FixedUpdate()
@@ -41,9 +52,5 @@ public class PlayerMovement : MonoBehaviour
     public void CheckVerticalSpeed(float verticalSpeed)
     {
         animator.SetFloat("VerticalSpeed", verticalSpeed);
-    }
-    public void TriggerWeapon()
-    {
-        animator.SetTrigger("Shooting");
     }
 }
