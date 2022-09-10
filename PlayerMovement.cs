@@ -5,22 +5,30 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public CharacterController2D controller;
-    public PlayerShooting playerShooting;
+    public PlayerShootingManager playerShootingManager;
     public Animator animator;
     public float runSpeed = 40f;
     float horizontalMove = 0f;
     bool jump = false;
-    bool IsShootingTriggerOn
+
+    bool IsWeaponReloaded
     {
-        set
+        get
         {
-            if (value)
-            {
-                animator.SetTrigger("Shooting");
-            }
-            playerShooting.Shoot();
+            return playerShootingManager.shooting.HasPassedNecessaryTimeForShot;
         }
     }
+    //bool IsShootingTriggerOn
+    //{
+    //    set
+    //    {
+    //        if (value)
+    //        {
+    //            animator.SetTrigger("Shooting");
+    //        }
+    //        playerShooting.Shoot();
+    //    }
+    //}
     void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
@@ -31,9 +39,11 @@ public class PlayerMovement : MonoBehaviour
             jump = true;
             animator.SetBool("IsJumping", true);
         }
-        if (Input.GetButtonDown("Fire1") && playerShooting.IsWeaponReloaded)
+        if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
-            IsShootingTriggerOn = !playerShooting.IsShootingInSameMovement;
+            animator.SetTrigger("Shooting");
+            playerShootingManager.Shot();
+            //IsShootingTriggerOn = !playerShooting.IsShootingInSameMovement;
         }
     }
     private void FixedUpdate()
@@ -53,4 +63,8 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.SetFloat("VerticalSpeed", verticalSpeed);
     }
+    //void BeginShot()
+    //{
+    //    playerShootingManager.Shot();
+    //}
 }
