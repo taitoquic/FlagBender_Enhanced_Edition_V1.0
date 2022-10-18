@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class PlayerMovementAction_Aiming 
+public class ActionAiming 
 {
     public Transform aimTransform;
     public Camera cam;
@@ -23,7 +23,6 @@ public class PlayerMovementAction_Aiming
         Vector3 mouseDirection = ((Vector3)MousePosition - targetTransform.position).normalized;
         return Mathf.Sign(mouseDirection.x) * isPlayerFacingToRight * mouseDirection;
     }
-
     public void MoveAimToDistance(Transform targetTransform)
     {
         Ray aimRay = new Ray(targetTransform.position, targetTransform.right);

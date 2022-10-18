@@ -9,5 +9,11 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
     }
-    public Features features;
+    [Header("State Machines Managers")]
+    [Space]
+
+    public SMShootingManager sMShootingManager;
+    [Header("Scene Managers")]
+    [Space]
+    public SceneTransformsManager sceneTransformsManager;
 }

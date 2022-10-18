@@ -19,7 +19,6 @@ public class CharacterController2D : MonoBehaviour
 	[Space]
 
 	public UnityEvent OnLandEvent;
-	public UnityEvent OnBeginOnAirEvent;
 	public UnityEvent<float> OnCheckVerticalSpeed;
 
 	private void Awake()
@@ -44,11 +43,9 @@ public class CharacterController2D : MonoBehaviour
 					OnLandEvent.Invoke();
 			}
 		}
-		if (!m_Grounded)
+		if (!m_Grounded || !wasGrounded)
 		{
-			OnBeginOnAirEvent.Invoke();
 			OnCheckVerticalSpeed.Invoke(m_Rigidbody2D.velocity.y);
-            Debug.Log("On Air");
         }
 	}
 

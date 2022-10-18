@@ -1,57 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class PlayerAiming : MonoBehaviour
 {
-    public delegate void AimingAction();
-    public static AimingAction OnNewMovementState;
+    public ActionAiming aiming;
 
-    public UnityEvent<int> OnTargetFirepointActive;
-    public UnityEvent<int> OnTargetFirepointDesactive;
+    public delegate void PlayerDoAction(ActionAiming aiming);
+    public static event PlayerDoAction OnPlayerAiming;
 
-    int SetOldIndex
+    float IsPlayerFacingToRight
     {
-        set
+        get
         {
-            OnTargetFirepointDesactive.Invoke(currentAimable.OldStateIndex);
-            OnTargetFirepointActive.Invoke(value);
-            currentAimable.OldStateIndex = value;
+            return Mathf.Sign(transform.rotation.y);
         }
     }
 
-    IAimingSMInteractable currentAimable;
-    public IAimingSMInteractable CurrentAimable
+    private void Update()
     {
-        set
-        {
-            currentAimable = value;
-            if (value != null) 
-            {
-                PlayerShootingManager.OnAimMouseDirection += AimingInState;
-                SetOldIndex = currentAimable.InteractableStateIndex;
-            }
-            else
-            {
-                PlayerShootingManager.OnAimMouseDirection -= AimingInState;
-            }
-        }
-    }
-    public void OnAimableStateExit()
-    {
-        PlayerMovementSM.OnMovementStateAction += StopAimingInState;
-    }
-
-    void AimingInState(Transform[] firepoints, PlayerMovementAction_Aiming aiming)
-    {
-        firepoints[currentAimable.InteractableStateIndex].right = aiming.CalculateNewTransformRight(firepoints[currentAimable.InteractableStateIndex]);
-        aiming.MoveAimToDistance(firepoints[currentAimable.InteractableStateIndex]);
-    }
-    void StopAimingInState()
-    {
-        OnNewMovementState?.Invoke();
-        PlayerMovementSM.OnMovementStateAction -= StopAimingInState;
-        CurrentAimable = null;
+        aiming.isPlayerFacingToRight = IsPlayerFacingToRight;
+        OnPlayerAiming?.Invoke(aiming);
     }
 }

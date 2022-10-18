@@ -4,49 +4,24 @@ using UnityEngine;
 
 public class PlayerShootingManager : MonoBehaviour
 {
-    public Transform[] firepoints = new Transform[3];
-    public PlayerMovementAction_Aiming aiming;
-    public PlayerMovementAction_Shooting shooting;
+    public BulletTemplate currentBulletEquiped;
+    float nextShotTime = 0f;
 
-    public delegate void PlayerInteractTransform(Transform[] firepoints, PlayerMovementAction_Aiming aiming);
-    public static event PlayerInteractTransform OnAimMouseDirection;
-
-    public delegate void PlayerInteractTransformToShoot(Transform[] firepoints, PlayerMovementAction_Shooting shooting);
-    public static event PlayerInteractTransformToShoot OnPlayerShooting;
-    float IsPlayerFacingToRight
+    public delegate void PlayerShoting(BulletTemplate currentBullet);
+    public static event PlayerShoting OnPlayerShooting;
+    public bool HasPassedNecessaryTimeForShot
     {
         get
         {
-            return Mathf.Sign(transform.rotation.y);
+            return Time.time > nextShotTime;
         }
-    }
-    GameObject BulletPrefab
-    {
-        get
-        {
-            return shooting.bulletPrefab;
-        }
-    }
-
-    private void Update()
-    {
-        aiming.isPlayerFacingToRight = IsPlayerFacingToRight;
-        OnAimMouseDirection?.Invoke(firepoints, aiming);
     }
     public void Shot()
     {
-        OnPlayerShooting?.Invoke(firepoints, shooting);
+        OnPlayerShooting?.Invoke(currentBulletEquiped);
     }
-    public void ActivateFirepoint(int stateIndex)
+    public void CalculateTimeForNextShot()
     {
-        firepoints[stateIndex].gameObject.SetActive(true);
-    }
-    public void DesactivateFirepoint(int stateIndex)
-    {
-        firepoints[stateIndex].gameObject.SetActive(false);
-    }
-    void StandShot()
-    {
-        Instantiate(BulletPrefab, firepoints[0].position, firepoints[0].rotation);
+        nextShotTime = Time.time + currentBulletEquiped.cadencyShot;
     }
 }

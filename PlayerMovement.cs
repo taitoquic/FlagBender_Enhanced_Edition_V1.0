@@ -11,24 +11,16 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove = 0f;
     bool jump = false;
 
+    public delegate void PlayerAction(PlayerShootingManager shooting);
+    public static event PlayerAction OnPlayerPressFireButton;
+
     bool IsWeaponReloaded
     {
         get
         {
-            return playerShootingManager.shooting.HasPassedNecessaryTimeForShot;
+            return playerShootingManager.HasPassedNecessaryTimeForShot;
         }
     }
-    //bool IsShootingTriggerOn
-    //{
-    //    set
-    //    {
-    //        if (value)
-    //        {
-    //            animator.SetTrigger("Shooting");
-    //        }
-    //        playerShooting.Shoot();
-    //    }
-    //}
     void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
@@ -41,9 +33,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
-            animator.SetTrigger("Shooting");
-            playerShootingManager.Shot();
-            //IsShootingTriggerOn = !playerShooting.IsShootingInSameMovement;
+            OnPlayerPressFireButton?.Invoke(playerShootingManager);
         }
     }
     private void FixedUpdate()
@@ -51,20 +41,18 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(horizontalMove * Time.fixedDeltaTime, jump);
         jump = false;
     }
-    public void PlayerBeginOnAir()
-    {
-        animator.SetBool("OnAir", true);
-    }
     public void PlayerLanding()
     {
-        animator.SetBool("OnAir", false);
+        animator.SetBool("IsOnAir", false);
+        PlayerOnAirSM.OnAirAnimation += PlayerOnAir;
+    }
+    void PlayerOnAir(Animator targetAnimator)
+    {
+        targetAnimator.SetBool("IsOnAir", true);
+        PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
     }
     public void CheckVerticalSpeed(float verticalSpeed)
     {
         animator.SetFloat("VerticalSpeed", verticalSpeed);
     }
-    //void BeginShot()
-    //{
-    //    playerShootingManager.Shot();
-    //}
 }

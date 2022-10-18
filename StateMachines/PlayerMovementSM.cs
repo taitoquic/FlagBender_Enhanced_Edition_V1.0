@@ -2,47 +2,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class PlayerMovementSM : StateMachineBehaviour, IAimingSMInteractable
+public class PlayerMovementSM : StateMachineBehaviour
 {
-    public int stateIndex;
-    static int oldStateIndex;
+    Animator currentAnimator;
 
-    public int OldStateIndex
+    public delegate void MovementActions();
+    public static event MovementActions OnMovementSMAction;
+    public virtual Animator CurrentAnimator
     {
         get
         {
-            return oldStateIndex;
+            return currentAnimator;
         }
         set
         {
-            oldStateIndex = value;
+            if(value != null)
+            {
+                OnMovementSMAction?.Invoke();
+                EnableShootingController();
+            }
+            currentAnimator = value;
         }
     }
-    public int InteractableStateIndex
+    public virtual bool StayableShotAllow
     {
         get
         {
-            return stateIndex;
+            return false;
         }
     }
-    public Features PlayerFeatures
-    {
-        get
-        {
-            return GameManager.instance.features;
-        }
-    }
-
-    public delegate void MovementStateAction();
-    public static event MovementStateAction OnMovementStateAction;
-
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        OnMovementStateAction?.Invoke();
-        PlayerFeatures.playerAiming.CurrentAimable = this;
+        CurrentAnimator = animator;
     }
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        PlayerFeatures.playerAiming.OnAimableStateExit();
+        CurrentAnimator = null;
+    }
+    public void EnableShootingController()
+    {
+        GameManager.instance.sMShootingManager.CurrentSM = this;
+    }
+    public virtual void ShootingInstructions(PlayerShootingManager currentShootingManager)
+    {
+        currentShootingManager.CalculateTimeForNextShot();
+    }
+    public virtual void BeginShootingAnimation()
+    {
+        CurrentAnimator.SetTrigger("Shooting");
     }
 }
