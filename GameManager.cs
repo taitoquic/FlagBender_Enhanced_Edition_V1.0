@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     [Space]
 
     public SMShootingManager sMShootingManager;
-    [Header("Scene Managers")]
+    [Header("Firepoints Manager")]
     [Space]
-    public SceneTransformsManager sceneTransformsManager;
+    public FirepointsManager firepointsManager;
 }

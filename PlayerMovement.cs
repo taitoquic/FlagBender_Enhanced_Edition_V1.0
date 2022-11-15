@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
-            OnPlayerPressFireButton?.Invoke(playerShootingManager);
+            OnPlayerPressFireButton?.Invoke(playerShootingManager.TriggerOn);
         }
     }
     private void FixedUpdate()

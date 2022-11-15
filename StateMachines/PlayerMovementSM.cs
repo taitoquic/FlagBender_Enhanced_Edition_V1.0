@@ -4,31 +4,73 @@ using UnityEngine;
 
 public class PlayerMovementSM : StateMachineBehaviour
 {
-    Animator currentAnimator;
+    Animator currentAnimatorSM;
+    public int stateIndex = 0;
 
     public delegate void MovementActions();
     public static event MovementActions OnMovementSMAction;
+
+    public Animator CurrentAnimatorSM
+    {
+        get
+        {
+            return currentAnimatorSM;
+        }
+        set
+        {
+            currentAnimatorSM = value;
+        }
+    }
+    int StateIndex
+    {
+        get
+        {
+            OnMovementSMAction = ChangeSMWithoutShooting;
+            return stateIndex;
+        }
+    }
+    FirepointsManager FirepointManager
+    {
+        get
+        {
+            return GameManager.instance.firepointsManager;
+        }
+    }
+    PlayerMovementSM PlayerShootingInMovement
+    {
+        get
+        {
+            OnMovementSMAction = PlayerBeginShooting;
+            return this;
+        }
+    }
     public virtual Animator CurrentAnimator
     {
         get
         {
-            return currentAnimator;
+            PlayerMovement.OnPlayerPressFireButton -= ShootingInstructions;
+            return null;
         }
         set
         {
-            if(value != null)
+            if (value != null)
             {
-                OnMovementSMAction?.Invoke();
-                EnableShootingController();
+                FirepointManager.EnableFirepointsManager(StateIndex);
+                PlayerMovement.OnPlayerPressFireButton += ShootingInstructions;
+                currentAnimatorSM = value;
             }
-            currentAnimator = value;
         }
     }
-    public virtual bool StayableShotAllow
+    public virtual Animator ShootingAnimator
     {
         get
         {
-            return false;
+            return null;
+        }
+        set
+        {
+            PlayerEndShooting();
+            currentAnimatorSM = value;
         }
     }
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -37,18 +79,27 @@ public class PlayerMovementSM : StateMachineBehaviour
     }
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        CurrentAnimator = null;
+        OnMovementSMAction?.Invoke();
     }
-    public void EnableShootingController()
+    void ChangeSMWithoutShooting()
     {
-        GameManager.instance.sMShootingManager.CurrentSM = this;
+        currentAnimatorSM = CurrentAnimator;
     }
-    public virtual void ShootingInstructions(PlayerShootingManager currentShootingManager)
+    void ShootingInstructions(PlayerShootingManager currentShootingManager)
     {
-        currentShootingManager.CalculateTimeForNextShot();
+        currentShootingManager.CurrentPlayerShooting = PlayerShootingInMovement;
     }
-    public virtual void BeginShootingAnimation()
+    void PlayerBeginShooting()
     {
-        CurrentAnimator.SetTrigger("Shooting");
+        ShootingAnimator = CurrentAnimator;
+        OnMovementSMAction = null;
+    }
+    public virtual void PlayerEndShooting()
+    {
+        currentAnimatorSM = ShootingAnimator;
+    }
+    public virtual void ChangeAnimatorToShootingSM()
+    {
+        currentAnimatorSM.SetTrigger("Shooting");
     }
 }

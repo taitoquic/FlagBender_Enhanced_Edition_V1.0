@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class PlayerRunSM : PlayerMovementSM
 {
-    public override bool StayableShotAllow
+    public override Animator ShootingAnimator
     {
         get
         {
-            return true;
+            //PlayerMovement.OnPlayerPressFireButton -= ShootingInMovement;
+            return null;
+        }
+        set
+        {
+            //PlayerMovement.OnPlayerPressFireButton += ShootingInMovement;
         }
     }
-    public override void ShootingInstructions(PlayerShootingManager currentShootingManager)
-    {
-        currentShootingManager.Shot();
-        base.ShootingInstructions(currentShootingManager);
-    }
+    //void ShootingInMovement(PlayerShootingManager currentShootingManager)
+    //{
+    //    currentShootingManager.Shot();
+    //}
 }

@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class PlayerOnAirSM : PlayerMovementSM
 {
+    public delegate void PlayerOnAirAnimation(Animator currentAnimator);
+    public static event PlayerOnAirAnimation OnAirAnimation;
+    //public override bool ShootingInAnimation
+    //{
+    //    get
+    //    {
+    //        return false;
+    //    }
+    //}
     public override Animator CurrentAnimator
     {
         get
@@ -20,25 +29,39 @@ public class PlayerOnAirSM : PlayerMovementSM
 
         }
     }
-    public override bool StayableShotAllow
+    Animator ShootingInMovementAnimator
     {
         get
         {
-            PlayerShootingSM.OnShootingAnimation += EndOnAirShotAnimation;
-            return true;
+            return CurrentAnimatorSM;
         }
     }
+    //public override Animator ShootingAnimator
+    //{
+    //    get
+    //    {
+    //        OnMovementSMAction = null;
+    //        return CurrentAnimator;
+    //    }
+    //}
 
-    public delegate void PlayerOnAirAnimation(Animator currentAnimator);
-    public static event PlayerOnAirAnimation OnAirAnimation;
-    public override void ShootingInstructions(PlayerShootingManager currentShootingManager)
+    //public override bool StayableShotAllow
+    //{
+    //    get
+    //    {
+    //        PlayerShootingSM.OnShootingAnimation += EndOnAirShotAnimation;
+    //        return true;
+    //    }
+    //}
+
+    //public override void ShootingInstructions(PlayerShootingManager currentShootingManager)
+    //{
+    //    currentShootingManager.Shot();
+    //    base.ShootingInstructions(currentShootingManager);
+    //}
+    public override void ChangeAnimatorToShootingSM()
     {
-        currentShootingManager.Shot();
-        base.ShootingInstructions(currentShootingManager);
-    }
-    public override void BeginShootingAnimation()
-    {
-        CurrentAnimator.SetBool("AirShot", true);
+        ShootingInMovementAnimator.SetBool("AirShot", true);
     }
     void EndOnAirShotAnimation(Animator targetAnimator)
     {

@@ -1,16 +1,11 @@
 using UnityEngine;
 
-public abstract class Firepoint : MonoBehaviour
+public class Firepoint : MonoBehaviour
 {
-    public abstract bool IsFirepointEnabled { set; }
-
+    public delegate void FirepointAction(Transform currentTransform);
+    public static event FirepointAction OnFirepointAction;
     private void OnEnable()
     {
-        IsFirepointEnabled = gameObject.activeInHierarchy;
+        OnFirepointAction?.Invoke(transform);
     }
-    private void OnDisable()
-    {
-        IsFirepointEnabled = gameObject.activeInHierarchy;
-    }
-    public abstract void FirepointDirectionTo<T>(T firepointAction) /*where T : ActionAiming*/;
 }
