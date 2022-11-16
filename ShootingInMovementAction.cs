@@ -4,29 +4,45 @@ using UnityEngine;
 
 public class ShootingInMovementAction <T> where T:PlayerMovementSM
 {
-    T currentMovementSM;
-    public T CurrentMovementSM
+    T playerInShootingSM;
+
+    public delegate void StayableAnimationAction();
+    public StayableAnimationAction OnBeginShootingInMovement;
+
+    bool StayableMode
     {
         get
         {
-            PlayerMovement.OnPlayerPressFireButton -= ShootingInMovement;
-            return currentMovementSM;
+            return playerInShootingSM.GetType().IsSubclassOf(typeof(T));
+        }
+    }
+    public T PlayerInShootingSM
+    {
+        get
+        {
+            if(StayableMode) PlayerMovement.OnPlayerPressFireButton -= ShootingInMovement;
+            PlayerShootingSM.OnShootingAction -= EndShootingInMovement;
+            return playerInShootingSM;
         }
         set
         {
-            if(value != null)
+            if(value.GetType().IsSubclassOf(typeof(T)))
             {
+                OnBeginShootingInMovement?.Invoke();
                 PlayerMovement.OnPlayerPressFireButton += ShootingInMovement;
             }
-            else
-            {
-
-            }
-            currentMovementSM = value;
+            PlayerShootingSM.OnShootingAction += EndShootingInMovement;
+            playerInShootingSM = value;
+            OnBeginShootingInMovement = null;
         }
     }
     void ShootingInMovement(PlayerShootingManager currentShootingManager)
     {
         currentShootingManager.Shot();
+    }
+    void EndShootingInMovement()
+    {
+        PlayerInShootingSM.PlayerEndShooting();
+        playerInShootingSM = null;
     }
 }

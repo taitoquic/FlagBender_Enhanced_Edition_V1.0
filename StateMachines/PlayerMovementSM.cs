@@ -8,7 +8,7 @@ public class PlayerMovementSM : StateMachineBehaviour
     public int stateIndex = 0;
 
     public delegate void MovementActions();
-    public static event MovementActions OnMovementSMAction;
+    public MovementActions OnMovementSMAction;
 
     public Animator CurrentAnimatorSM
     {
@@ -21,14 +21,6 @@ public class PlayerMovementSM : StateMachineBehaviour
             currentAnimatorSM = value;
         }
     }
-    int StateIndex
-    {
-        get
-        {
-            OnMovementSMAction = ChangeSMWithoutShooting;
-            return stateIndex;
-        }
-    }
     FirepointsManager FirepointManager
     {
         get
@@ -36,7 +28,7 @@ public class PlayerMovementSM : StateMachineBehaviour
             return GameManager.instance.firepointsManager;
         }
     }
-    PlayerMovementSM PlayerShootingInMovement
+    public virtual PlayerMovementSM PlayerShootingInMovement
     {
         get
         {
@@ -53,24 +45,18 @@ public class PlayerMovementSM : StateMachineBehaviour
         }
         set
         {
+            FirepointManager.EnableFirepointsManager(stateIndex);
             if (value != null)
             {
-                FirepointManager.EnableFirepointsManager(StateIndex);
+                OnMovementSMAction = PlayerEndShooting;
                 PlayerMovement.OnPlayerPressFireButton += ShootingInstructions;
                 currentAnimatorSM = value;
             }
-        }
-    }
-    public virtual Animator ShootingAnimator
-    {
-        get
-        {
-            return null;
-        }
-        set
-        {
-            PlayerEndShooting();
-            currentAnimatorSM = value;
+            else if (currentAnimatorSM != null)
+            {
+                currentAnimatorSM = CurrentAnimator;
+                OnMovementSMAction -= PlayerEndShooting;
+            }
         }
     }
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -81,24 +67,20 @@ public class PlayerMovementSM : StateMachineBehaviour
     {
         OnMovementSMAction?.Invoke();
     }
-    void ChangeSMWithoutShooting()
-    {
-        currentAnimatorSM = CurrentAnimator;
-    }
     void ShootingInstructions(PlayerShootingManager currentShootingManager)
     {
         currentShootingManager.CurrentPlayerShooting = PlayerShootingInMovement;
     }
-    void PlayerBeginShooting()
+    public virtual void PlayerBeginShooting()
     {
-        ShootingAnimator = CurrentAnimator;
+        currentAnimatorSM = CurrentAnimator;
         OnMovementSMAction = null;
     }
     public virtual void PlayerEndShooting()
     {
-        currentAnimatorSM = ShootingAnimator;
+        CurrentAnimator = null;
     }
-    public virtual void ChangeAnimatorToShootingSM()
+    public void ChangeAnimatorToShootingSM()
     {
         currentAnimatorSM.SetTrigger("Shooting");
     }

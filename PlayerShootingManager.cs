@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerShootingManager : FirepointTargetable
 {
     public BulletTemplate currentBulletEquiped;
+    public ShootingInMovementAction<PlayerMovementSM> playerInStayableAnimation = new ShootingInMovementAction<PlayerMovementSM>();
     float nextShotTime = 0f;
-    FirepointAction<PlayerShootingManager> shootingDirection = new FirepointAction<PlayerShootingManager>();
     PlayerMovementSM currentPlayerShooting;
+    FirepointAction<PlayerShootingManager> shootingDirection = new FirepointAction<PlayerShootingManager>();
     public bool HasPassedNecessaryTimeForShot
     {
         get
@@ -23,13 +24,6 @@ public class PlayerShootingManager : FirepointTargetable
             return this;
         }
     }
-    bool ShootingAfterFirstShotAllowed
-    {
-        get
-        {
-            return currentPlayerShooting != null;
-        }
-    }
 
     public PlayerMovementSM CurrentPlayerShooting
     {
@@ -42,30 +36,11 @@ public class PlayerShootingManager : FirepointTargetable
         {
             if(value != null)
             {
+                playerInStayableAnimation.OnBeginShootingInMovement = Shot;
                 value.ChangeAnimatorToShootingSM();
+                PlayerShootingSM.OnShootingAction += FirstShot;
             }
-            PlayerShootingSM.OnShootingAction += FirstShot;
             currentPlayerShooting = value;
-        }
-    }
-    bool StayableMode
-    {
-        get
-        {
-            PlayerShootingSM.OnShootingAction -= EndShooting;
-            return ShootingAfterFirstShotAllowed;
-        }
-        set
-        {
-            if (value)
-            {
-                Shot();
-            }
-            else
-            {
-                currentPlayerShooting = null;
-            }
-            PlayerShootingSM.OnShootingAction += EndShooting;
         }
     }
     public override void EnableTargetableAction()
@@ -82,14 +57,7 @@ public class PlayerShootingManager : FirepointTargetable
     }
     void FirstShot()
     {
-        StayableMode = CurrentPlayerShooting.CurrentAnimatorSM != null;
-    }
-    void EndShooting()
-    {
-        if (StayableMode)
-        {
-            currentPlayerShooting.PlayerEndShooting();
-            currentPlayerShooting = null;
-        }
+        playerInStayableAnimation.PlayerInShootingSM = CurrentPlayerShooting;
+        currentPlayerShooting = null;
     }
 }

@@ -6,13 +6,6 @@ public class PlayerOnAirSM : PlayerMovementSM
 {
     public delegate void PlayerOnAirAnimation(Animator currentAnimator);
     public static event PlayerOnAirAnimation OnAirAnimation;
-    //public override bool ShootingInAnimation
-    //{
-    //    get
-    //    {
-    //        return false;
-    //    }
-    //}
     public override Animator CurrentAnimator
     {
         get
@@ -29,43 +22,26 @@ public class PlayerOnAirSM : PlayerMovementSM
 
         }
     }
-    Animator ShootingInMovementAnimator
+    Animator ShootingOnAirAnimator
     {
         get
         {
-            return CurrentAnimatorSM;
+            CurrentAnimatorSM.SetBool("AirShot", false);
+            return null;
+        }
+        set
+        {
+            CurrentAnimatorSM.SetBool("AirShot", true);
         }
     }
-    //public override Animator ShootingAnimator
-    //{
-    //    get
-    //    {
-    //        OnMovementSMAction = null;
-    //        return CurrentAnimator;
-    //    }
-    //}
-
-    //public override bool StayableShotAllow
-    //{
-    //    get
-    //    {
-    //        PlayerShootingSM.OnShootingAnimation += EndOnAirShotAnimation;
-    //        return true;
-    //    }
-    //}
-
-    //public override void ShootingInstructions(PlayerShootingManager currentShootingManager)
-    //{
-    //    currentShootingManager.Shot();
-    //    base.ShootingInstructions(currentShootingManager);
-    //}
-    public override void ChangeAnimatorToShootingSM()
+    public override void PlayerBeginShooting()
     {
-        ShootingInMovementAnimator.SetBool("AirShot", true);
+        ShootingOnAirAnimator = CurrentAnimator;
+        OnMovementSMAction = null;
     }
-    void EndOnAirShotAnimation(Animator targetAnimator)
+    public override void PlayerEndShooting()
     {
-        targetAnimator.SetBool("AirShot", false);
-        PlayerShootingSM.OnShootingAnimation -= EndOnAirShotAnimation;
+        if(OnMovementSMAction==null) CurrentAnimatorSM = ShootingOnAirAnimator;
+        base.PlayerEndShooting();
     }
 }

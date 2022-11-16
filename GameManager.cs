@@ -9,10 +9,7 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
     }
-    [Header("State Machines Managers")]
-    [Space]
 
-    public SMShootingManager sMShootingManager;
     [Header("Firepoints Manager")]
     [Space]
     public FirepointsManager firepointsManager;

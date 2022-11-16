@@ -8,10 +8,6 @@ public class PlayerShootingSM : StateMachineBehaviour
 
     public delegate void PlayerShotAction();
     public static event PlayerShotAction OnShootingAction;
-
-    public delegate void ShootingAnimation(Animator currentAnimator);
-    public static event ShootingAnimation OnShootingAnimation;
-
     public virtual Animator CurrentAnimator
     {
         get
@@ -20,14 +16,6 @@ public class PlayerShootingSM : StateMachineBehaviour
         }
         set
         {
-            if(value != null)
-            {
-                OnShootingAnimation?.Invoke(value);
-            }
-            else
-            {
-                OnShootingAnimation?.Invoke(currentAnimator);
-            }
             OnShootingAction?.Invoke();
             currentAnimator = value;
         }
