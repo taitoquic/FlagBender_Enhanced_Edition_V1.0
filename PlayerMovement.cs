@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
-            OnPlayerPressFireButton?.Invoke(playerShootingManager.TriggerOn);
+            OnPlayerPressFireButton?.Invoke(playerShootingManager);
         }
     }
     private void FixedUpdate()
@@ -44,12 +44,12 @@ public class PlayerMovement : MonoBehaviour
     public void PlayerLanding()
     {
         animator.SetBool("IsOnAir", false);
-        PlayerOnAirSM.OnAirAnimation += PlayerOnAir;
+        //PlayerOnAirSM.OnAirAnimation += PlayerOnAir;
     }
     void PlayerOnAir(Animator targetAnimator)
     {
         targetAnimator.SetBool("IsOnAir", true);
-        PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
+        //PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
     }
     public void CheckVerticalSpeed(float verticalSpeed)
     {

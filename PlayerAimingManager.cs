@@ -7,10 +7,14 @@ public class PlayerAimingManager : FirepointTargetable
     public Camera cam;
     public Transform aimTransform;
     public float distanceToAim = 2f;
-    FirepointAction<PlayerAimingManager> aimingDirection = new FirepointAction<PlayerAimingManager>();
-
-    delegate void AimingAction(Transform firepointTransform);
-    AimingAction OnAiming;
+    FirepointAction aimingDirection = new FirepointAction();
+    public override FirepointAction TargetableFirepointAction
+    {
+        get
+        {
+            return aimingDirection;
+        }
+    }
     Vector2 MousePosition
     {
         get
@@ -25,38 +29,33 @@ public class PlayerAimingManager : FirepointTargetable
             return Mathf.Sign(transform.rotation.y);
         }
     }
-    PlayerAimingManager AimingEnabled
+    float DistanceToAim
     {
         get
         {
-            OnAiming = MoveAimToDistance;
-            OnAiming += RotateFirepointEnable;
-            return this;
+            aimingDirection.OnFirepointActionValid -= MoveAimToDistance;
+            return distanceToAim;
         }
-    }
-    public override void EnableTargetableAction()
-    {
-        aimingDirection.CurrentFPTargetable = AimingEnabled;
-    }
-    public override void PlayerFPAction(Transform currentFirepoint)
-    {
-        OnAiming?.Invoke(currentFirepoint);
     }
     private void Update()
     {
         aimingDirection.ResolveFirepointAction();
     }
-    void RotateFirepointEnable(Transform currentFirepoint)
+    public override void SetCurrentFirepointTransform(Transform firepointTransform)
     {
-        Vector3 mouseDirection = ((Vector3)MousePosition - currentFirepoint.position).normalized;
-        currentFirepoint.right = Mathf.Sign(mouseDirection.x) * PlayerLooksToRight * mouseDirection;
+        base.SetCurrentFirepointTransform(firepointTransform);
+        aimingDirection.OnFirepointActionValid += MoveAimToDistance;
     }
     void MoveAimToDistance(Transform currentFirepoint)
     {
-        OnAiming -= MoveAimToDistance;
-        aimTransform.parent = currentFirepoint;
         Ray aimRay = new Ray(currentFirepoint.position, currentFirepoint.right);
-        aimTransform.position = aimRay.GetPoint(distanceToAim);
+        aimTransform.parent = currentFirepoint;
+        aimTransform.position = aimRay.GetPoint(DistanceToAim);
         aimTransform.localEulerAngles = Vector3.zero;
+    }
+    public override void FirepointAction(Transform firepointTransform)
+    {
+        Vector3 mouseDirection = ((Vector3)MousePosition - firepointTransform.position).normalized;
+        firepointTransform.right = Mathf.Sign(mouseDirection.x) * PlayerLooksToRight * mouseDirection;
     }
 }

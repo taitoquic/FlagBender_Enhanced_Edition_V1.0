@@ -4,84 +4,26 @@ using UnityEngine;
 
 public class PlayerMovementSM : StateMachineBehaviour
 {
-    Animator currentAnimatorSM;
-    public int stateIndex = 0;
+    public int stateIndex;
+    ShootingAnimation shootingAnimation = new ShootingAnimation();
+    ShootingFirepointManager shootingFirepointManager = new ShootingFirepointManager();
 
-    public delegate void MovementActions();
-    public MovementActions OnMovementSMAction;
-
-    public Animator CurrentAnimatorSM
+    public delegate void MovementAction();
+    public static event MovementAction OnMovementSMAction;
+    ShootingAnimation BeginShootingAnimation
     {
         get
         {
-            return currentAnimatorSM;
-        }
-        set
-        {
-            currentAnimatorSM = value;
-        }
-    }
-    FirepointsManager FirepointManager
-    {
-        get
-        {
-            return GameManager.instance.firepointsManager;
-        }
-    }
-    public virtual PlayerMovementSM PlayerShootingInMovement
-    {
-        get
-        {
-            OnMovementSMAction = PlayerBeginShooting;
-            return this;
-        }
-    }
-    public virtual Animator CurrentAnimator
-    {
-        get
-        {
-            PlayerMovement.OnPlayerPressFireButton -= ShootingInstructions;
-            return null;
-        }
-        set
-        {
-            FirepointManager.EnableFirepointsManager(stateIndex);
-            if (value != null)
-            {
-                OnMovementSMAction = PlayerEndShooting;
-                PlayerMovement.OnPlayerPressFireButton += ShootingInstructions;
-                currentAnimatorSM = value;
-            }
-            else if (currentAnimatorSM != null)
-            {
-                currentAnimatorSM = CurrentAnimator;
-                OnMovementSMAction -= PlayerEndShooting;
-            }
+            shootingFirepointManager.TargetFirepointIndex = stateIndex;
+            return shootingAnimation;
         }
     }
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        CurrentAnimator = animator;
+        BeginShootingAnimation.CurrentAnimator = animator;
     }
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         OnMovementSMAction?.Invoke();
-    }
-    void ShootingInstructions(PlayerShootingManager currentShootingManager)
-    {
-        currentShootingManager.CurrentPlayerShooting = PlayerShootingInMovement;
-    }
-    public virtual void PlayerBeginShooting()
-    {
-        currentAnimatorSM = CurrentAnimator;
-        OnMovementSMAction = null;
-    }
-    public virtual void PlayerEndShooting()
-    {
-        CurrentAnimator = null;
-    }
-    public void ChangeAnimatorToShootingSM()
-    {
-        currentAnimatorSM.SetTrigger("Shooting");
     }
 }
