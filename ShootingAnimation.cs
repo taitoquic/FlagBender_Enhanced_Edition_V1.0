@@ -10,7 +10,6 @@ public class ShootingAnimation
     {
         get
         {
-            ShootingAction.OnShootingActions -= PlayShootingAnimation;
             PlayerMovementSM.OnMovementSMAction -= EndWithoutPlayAnimation;
             PlayerMovement.OnPlayerPressFireButton -= PlayerShooting;
             return currentAnimator;
@@ -19,7 +18,6 @@ public class ShootingAnimation
         {
             if(value != null)
             {
-                ShootingAction.OnShootingActions += PlayShootingAnimation;
                 PlayerMovementSM.OnMovementSMAction += EndWithoutPlayAnimation;
                 PlayerMovement.OnPlayerPressFireButton += PlayerShooting;
             }
@@ -34,32 +32,33 @@ public class ShootingAnimation
     {
         get
         {
-            PlayerMovementSM.OnMovementSMAction -= EndPlayAnimation;
+            currentAnimator.SetTrigger("Shooting");
+            ShootingAction.OnShootingActions -= PlayShootingAnimation;
             return null;
         }
         set
         {
-            if(value != null)
-            {
-                value.SetTrigger("Shooting");
-                PlayerMovementSM.OnMovementSMAction += EndPlayAnimation;
-            }
+            ShootingAction.OnShootingActions += PlayShootingAnimation;
+        }
+    }
+    ShootingAction TriggerShooting
+    {
+        get
+        {
+            ShootingAnimator = CurrentAnimator;
+            return playerShootingAction;
         }
     }
     void PlayerShooting(PlayerShootingManager currenPlayerShooting)
     {
-        playerShootingAction.PlayerShootingManager = currenPlayerShooting;
+        TriggerShooting.PlayerShootingManager = currenPlayerShooting;
     }
     void PlayShootingAnimation()
     {
-        ShootingAnimator = CurrentAnimator;
+        currentAnimator = ShootingAnimator;
     }
     void EndWithoutPlayAnimation()
     {
         CurrentAnimator = null;
-    }
-    void EndPlayAnimation()
-    {
-        currentAnimator = ShootingAnimator;
     }
 }

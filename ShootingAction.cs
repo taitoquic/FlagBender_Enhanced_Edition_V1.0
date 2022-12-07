@@ -5,6 +5,8 @@ using UnityEngine;
 public class ShootingAction 
 {
     PlayerShootingManager playerShootingManager;
+    ShootingStand shootingStand = new ShootingStand();
+    ShootingStayable shootingStayable = new ShootingStayable();
 
     public delegate void ShootingActions();
     public static event ShootingActions OnShootingActions;
@@ -27,60 +29,16 @@ public class ShootingAction
             playerShootingManager = value;
         }
     }
-    PlayerShootingManager StandShot
-    {
-        get
-        {
-            PlayerShootingSM.OnShootingAction -= ExitStandShooting;
-            OnShootingActions?.Invoke();
-            return null;
-        }
-        set
-        {
-            if(value != null)
-            {
-                value.OnShooting = null;
-                PlayerShootingSM.OnShootingAction += ExitStandShooting;
-            }
-        }
-    }
-    PlayerShootingManager StayableShooting
-    {
-        get
-        {
-            PlayerMovement.OnPlayerPressFireButton -= StayableMode;
-            PlayerShootingSM.OnShootingAction -= ExitStayableShooting;
-            playerShootingManager.OnShooting = null;
-            OnShootingActions?.Invoke();
-            return null;
-        }
-        set
-        {
-            PlayerMovement.OnPlayerPressFireButton += StayableMode;
-            PlayerShootingSM.OnShootingAction += ExitStayableShooting;
-        }
-    }
     void AfterFirstShot()
     {
         if (PlayerShootingManager.IsShootingInAnimation)
         {
-            StandShot = PlayerShootingManager;
+            shootingStand.ShootingPlayer = playerShootingManager;
         }
         else
         {
-            StayableShooting = PlayerShootingManager;
+            shootingStayable.ShootingPlayer = playerShootingManager;
         }
-    }
-    void ExitStandShooting()
-    {
-        playerShootingManager = StandShot;
-    }
-    void StayableMode(PlayerShootingManager currentPlayerShooting)
-    {
-        currentPlayerShooting.TriggerOn();
-    }
-    void ExitStayableShooting()
-    {
-        playerShootingManager = StayableShooting;
+        playerShootingManager = null;
     }
 }

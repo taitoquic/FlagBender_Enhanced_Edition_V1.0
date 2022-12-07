@@ -19,6 +19,7 @@ public class ShootingFirepointManager
         set
         {
             targetFirepointIndex = value;
+            FirepointManager.EnableFirepointsManager(targetFirepointIndex);
             CurrentFirepointsManager = FirepointManager;
         }
     }
@@ -34,7 +35,6 @@ public class ShootingFirepointManager
         {
             if (value != null)
             {
-                value.EnableFirepointsManager(targetFirepointIndex);
                 PlayerMovementSM.OnMovementSMAction += MoveToOtherMovementSM;
                 ShootingAction.OnShootingActions += StopMovementForShooting;
             }
@@ -49,13 +49,13 @@ public class ShootingFirepointManager
     {
         get
         {
-            ShootingAction.OnShootingActions -= MoveToOtherMovementSMAfterShooting;
+            ShootingTemplate.OnEndShooting -= MoveToOtherMovementSMAfterShooting;
             currentFirepointsManager.EnableFirepointsManager(targetFirepointIndex);
             return null;
         }
         set
         {
-            ShootingAction.OnShootingActions += MoveToOtherMovementSMAfterShooting;
+            ShootingTemplate.OnEndShooting += MoveToOtherMovementSMAfterShooting;
         }
     }
     void MoveToOtherMovementSM()
