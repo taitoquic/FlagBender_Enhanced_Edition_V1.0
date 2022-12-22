@@ -3,11 +3,34 @@ using UnityEngine;
 public class FirepointsManager : MonoBehaviour
 {
     public GameObject[] firepoints = new GameObject[3];
-    public FirepointTargetable[] firepointTargetables = new FirepointTargetable[2];
-    FirepointTargetableManager firepointTargetableManager = new FirepointTargetableManager();
+    FirepointTargetableManager newFirepointTransform;
 
     delegate void FirepointEnableAction(int targetFirepointIndex);
     FirepointEnableAction OnEnableFirepoint;
+
+    FirepointTargetableManager FirepointTargetableManager
+    {
+        get
+        {
+            return GetComponent<FirepointTargetableManager>();
+        }
+    }
+    FirepointTargetableManager NewFirepointTransform
+    {
+        get
+        {
+            Firepoint.OnFirepointAction -= newFirepointTransform.GetFirepointTransform;
+            return null;
+        }
+        set
+        {
+            if (value != null)
+            {
+                Firepoint.OnFirepointAction += NewFirepointTransformActions;
+                newFirepointTransform = value;
+            }
+        }
+    }
     bool FirepointEnabled
     {
         get
@@ -21,23 +44,16 @@ public class FirepointsManager : MonoBehaviour
         get
         {
             OnEnableFirepoint = EnableTargetFirepoint;
-            Firepoint.OnFirepointAction += GetFirepointTransform;
+            NewFirepointTransform = FirepointTargetableManager;
             return false;
-        }
-    }
-    FirepointTargetableManager FirepointTargetableManager
-    {
-        get
-        {
-            Firepoint.OnFirepointAction -= GetFirepointTransform;
-            return firepointTargetableManager;
         }
     }
     private void Start()
     {
         OnEnableFirepoint = EnableTargetFirepoint;
-        Firepoint.OnFirepointAction += GetFirepointTransform;
-        StartCoroutine(firepointTargetableManager.AddFirepointTargetableAction(firepointTargetables));
+        newFirepointTransform = GetComponent<FirepointTargetableManager>();
+        //NewFirepointTransform = FirepointTargetableManager;
+        //NewFirepointTransform = GameManager.instance.firepointTargetableManager;
     }
     public void EnableFirepointsManager(int targetFirepointIndex)
     {
@@ -51,9 +67,9 @@ public class FirepointsManager : MonoBehaviour
     {
         firepoints[targetFirepointIndex].SetActive(FirepointDisabled);
     }
-    void GetFirepointTransform(Transform firepointTransform)
+    void NewFirepointTransformActions(Transform firepointTransform)
     {
-        FirepointTargetableManager.CurrentFirepointTransform = firepointTransform;
-        firepointTargetableManager.EnableTargetableActions(firepointTargetables);
+        newFirepointTransform.GetFirepointTransform(firepointTransform);
+        newFirepointTransform = NewFirepointTransform;
     }
 }

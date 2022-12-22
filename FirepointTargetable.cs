@@ -3,10 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 public abstract class FirepointTargetable: MonoBehaviour
 {
-    public abstract FirepointAction TargetableFirepointAction { get; }
-    public abstract void FirepointAction(Transform firepointTransform);
-    public virtual void SetCurrentFirepointTransform(Transform firepointTransform)
+    private void Awake()
     {
-        TargetableFirepointAction.CurrentFirepointTransform = firepointTransform;
+        GameManager.instance.firepointTargetableManager.AddFirepointTargetable(this);
     }
+    public abstract FirepointAction TargetableFirepointAction { get; }
+
+    public virtual Transform CurrentFirepointTransform
+    {
+        get
+        {
+            return TargetableFirepointAction.CurrentFirepointTransform;
+        }
+        set
+        {
+            if (value != null)
+            {
+                TargetableFirepointAction.CurrentFirepointTransform = value;
+            }
+        }
+    }
+    public abstract void FirepointAction(Transform firepointTransform);
 }

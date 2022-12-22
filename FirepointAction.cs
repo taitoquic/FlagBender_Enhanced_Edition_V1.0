@@ -5,13 +5,6 @@ using UnityEngine;
 public class FirepointAction
 {
     Transform currentFirepointTransform;
-    public int CurrentFirepointIndex
-    {
-        get
-        {
-            return currentFirepointTransform.GetSiblingIndex();
-        }
-    }
 
     public delegate void TargetFirepointAction(Transform currentFirepoint);
     public TargetFirepointAction OnFirepointActionValid;

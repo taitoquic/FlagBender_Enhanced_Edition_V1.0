@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
-    [Header("Firepoints Manager")]
+    [Header("Board Managers")]
     [Space]
     public FirepointsManager firepointsManager;
+    public FirepointTargetableManager firepointTargetableManager;
 }

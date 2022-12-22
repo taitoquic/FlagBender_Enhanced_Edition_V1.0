@@ -15,6 +15,17 @@ public class PlayerAimingManager : FirepointTargetable
             return aimingDirection;
         }
     }
+    public override Transform CurrentFirepointTransform
+    {
+        set
+        {
+            if (value != null)
+            {
+                aimingDirection.OnFirepointActionValid += MoveAimToDistance;
+            }
+            base.CurrentFirepointTransform = value;
+        }
+    }
     Vector2 MousePosition
     {
         get
@@ -40,11 +51,6 @@ public class PlayerAimingManager : FirepointTargetable
     private void Update()
     {
         aimingDirection.ResolveFirepointAction();
-    }
-    public override void SetCurrentFirepointTransform(Transform firepointTransform)
-    {
-        base.SetCurrentFirepointTransform(firepointTransform);
-        aimingDirection.OnFirepointActionValid += MoveAimToDistance;
     }
     void MoveAimToDistance(Transform currentFirepoint)
     {

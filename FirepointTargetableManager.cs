@@ -2,46 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FirepointTargetableManager 
+public class FirepointTargetableManager: MonoBehaviour
 {
-    Transform currentFirepointTransform;
-    public Transform CurrentFirepointTransform
+    public List<FirepointTargetable> firepointTargetables = new List<FirepointTargetable>();
+    private void Start()
     {
-        set
+        StartCoroutine("AddFirepointTargetableAction");        
+    }
+    public void GetFirepointTransform(Transform firepointTransform)
+    {
+        foreach (FirepointTargetable firepointTargetable in firepointTargetables)
         {
-            if(value != null)
+            firepointTargetable.CurrentFirepointTransform = firepointTransform;
+        }
+    }
+    public void AddFirepointTargetable(FirepointTargetable currentFirepointTargetable)
+    {
+        firepointTargetables.Add(currentFirepointTargetable);
+    }
+
+    public IEnumerator AddFirepointTargetableAction()
+    {
+        int indexChecked = 0;
+        while (indexChecked != firepointTargetables.Count) 
+        {
+            if (firepointTargetables[indexChecked].CurrentFirepointTransform != null)
             {
-                currentFirepointTransform = value;
+                firepointTargetables[indexChecked].TargetableFirepointAction.OnFirepointActionValid = firepointTargetables[indexChecked].FirepointAction;
+                indexChecked++;
+            }
+            else
+            {
+                yield return null;
             }
         }
-    }
-    public void EnableTargetableActions(FirepointTargetable[] firepointTargetables)
-    {
-        for (int i = 0; i < firepointTargetables.Length; i++)
-        {
-            firepointTargetables[i].SetCurrentFirepointTransform(currentFirepointTransform);
-        }
-    }
-    public IEnumerator AddFirepointTargetableAction(FirepointTargetable[] firepointTargetables)
-    {
-        while (!FirepointsTargetablesTransformsValid(firepointTargetables))
-        {
-            yield return null;
-        }
-        for (int i = 0; i < firepointTargetables.Length; i++)
-        {
-            firepointTargetables[i].TargetableFirepointAction.OnFirepointActionValid = firepointTargetables[i].FirepointAction;
-        }
-    }
-    bool FirepointsTargetablesTransformsValid(FirepointTargetable[] firepointTargetables)
-    {
-        for (int i = 0; i < firepointTargetables.Length; i++)
-        {
-            if (firepointTargetables[i].TargetableFirepointAction.CurrentFirepointTransform == null)
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }
