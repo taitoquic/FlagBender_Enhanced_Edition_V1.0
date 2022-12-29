@@ -6,7 +6,6 @@ public class PlayerMovementSM : StateMachineBehaviour
 {
     public int stateIndex;
     ShootingAnimation shootingAnimation = new ShootingAnimation();
-    ShootingFirepointManager shootingFirepointManager = new ShootingFirepointManager();
 
     public delegate void MovementAction();
     public static event MovementAction OnMovementSMAction;
@@ -14,7 +13,7 @@ public class PlayerMovementSM : StateMachineBehaviour
     {
         get
         {
-            shootingFirepointManager.TargetFirepointIndex = stateIndex;
+            GameManager.instance.firepointsManager.EnableFirepoint(stateIndex);
             return shootingAnimation;
         }
     }

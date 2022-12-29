@@ -4,70 +4,56 @@ using UnityEngine;
 
 public class ShootingAction 
 {
-    int shootingModeIndex;
-    ShootingMode[] shootingModes = new ShootingMode[2] { new ShootingModeStand(), new ShootingModeStayable() };
     ShootingMode currentShootingMode;
-    //PlayerShootingManager playerShootingManager;
-    //ShootingStand shootingStand = new ShootingStand();
-    //ShootingStayable shootingStayable = new ShootingStayable();
 
-    //public delegate void ShootingActions();
-    //public static event ShootingActions OnShootingActions;
-
-    public int ShootingModeIndex
-    {
-        set
-        {
-            shootingModeIndex = value == 0 ? 0 : 1;
-            CurrentShootingMode = shootingModes[shootingModeIndex];
-        }
-    }
+    public delegate void ShootingActions();
+    public static event ShootingActions OnShootingActions;
     public ShootingMode CurrentShootingMode
     {
         get
         {
+            PlayerMovementSM.OnMovementSMAction -= ExitWithoutShooting;
             PlayerMovement.OnPlayerPressFireButton -= PlayerShooting;
             return currentShootingMode;
         }
         set
         {
-            PlayerMovement.OnPlayerPressFireButton += PlayerShooting;
+            if (value != null)
+            {
+                PlayerMovementSM.OnMovementSMAction += ExitWithoutShooting;
+                PlayerMovement.OnPlayerPressFireButton += PlayerShooting;
+            }
+            else
+            {
+                currentShootingMode = CurrentShootingMode;
+            }
             currentShootingMode = value;
         }
     }
-
-    //public PlayerShootingManager PlayerShootingManager
-    //{
-    //    get
-    //    {
-    //        PlayerShootingSM.OnShootingAction -= AfterFirstShot;
-    //        return playerShootingManager;
-    //    }
-    //    set
-    //    {
-    //        if (value != null)
-    //        {
-    //            //value.FirstShot();
-    //            OnShootingActions?.Invoke();
-    //            PlayerShootingSM.OnShootingAction += AfterFirstShot;
-    //        }
-    //        playerShootingManager = value;
-    //    }
-    //}
+    ShootingMode CurrentShootingModeShooting
+    {
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= ExitShootingAction;
+            return null;
+        }
+        set
+        {
+            OnShootingActions?.Invoke();
+            PlayerShootingSM.OnShootingAction += ExitShootingAction;
+        }
+    }
+    void ExitWithoutShooting()
+    {
+        CurrentShootingMode = null;
+    }
     void PlayerShooting(PlayerShootingManager currenPlayerShooting)
     {
-        CurrentShootingMode.CurrentShootingManager = currenPlayerShooting;
+        currentShootingMode.CurrentShootingManager = currenPlayerShooting;
+        CurrentShootingModeShooting = CurrentShootingMode;
     }
-    //void AfterFirstShot()
-    //{
-    //    if (PlayerShootingManager.IsShootingInAnimation)
-    //    {
-    //        //shootingStand.ShootingPlayer = playerShootingManager;
-    //    }
-    //    else
-    //    {
-    //        //shootingStayable.ShootingPlayer = playerShootingManager;
-    //    }
-    //    playerShootingManager = null;
-    //}
+    void ExitShootingAction()
+    {
+        currentShootingMode = CurrentShootingModeShooting;
+    }
 }

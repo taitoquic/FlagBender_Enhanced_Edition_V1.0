@@ -1,68 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public abstract class ShootingMode 
 {
     PlayerShootingManager currentShootingManager;
 
-    public delegate void ShootingActions();
-    public static event ShootingActions OnShootingActions;
+    public delegate void DisableFirepoint();
+    public static event DisableFirepoint OnDisableFirepoint;
 
     public PlayerShootingManager CurrentShootingManager
     {
         get
         {
-            PlayerShootingSM.OnShootingAction -= PlayerBeginToShooting;
+            PlayerShootingSM.OnShootingAction -= PlayerFirstShot;
             return currentShootingManager;
         }
         set
         {
             if (value != null)
             {
-                PlayerShootingSM.OnShootingAction += PlayerBeginToShooting;
-                OnShootingActions?.Invoke();
+                PlayerShootingSM.OnShootingAction += PlayerFirstShot;
             }
+            currentShootingManager = value;
         }
     }
-    public virtual PlayerShootingManager PlayerShooting
+    public virtual PlayerShootingManager CurrentShootingModeFirstShot
     {
         get
         {
-            PlayerShootingSM.OnShootingAction -= PlayerEndToShooting;
-            OnShootingActions?.Invoke();
+            OnDisableFirepoint?.Invoke();
+            PlayerShootingSM.OnShootingAction -= ExitShooting;
             return null;
         }
         set
         {
-            PlayerShootingSM.OnShootingAction += PlayerEndToShooting;
+            PlayerShootingSM.OnShootingAction += ExitShooting;
         }
     }
-    void PlayerBeginToShooting()
+    void PlayerFirstShot()
     {
-        PlayerShooting = CurrentShootingManager;
+        CurrentShootingModeFirstShot = CurrentShootingManager;
     }
-    void PlayerEndToShooting()
+    void ExitShooting()
     {
-        currentShootingManager = PlayerShooting;
+        currentShootingManager = CurrentShootingModeFirstShot;
     }
-    //void DisableShootingMode()
-    //{
-    //    currentShootingManager = CurrentShootingManager;
-    //}
 }
-//get
-//{
-//    currentShootingManager.OnShooting += currentShootingManager.CalculateTimeForNextShot;
-//    Firepoint.OnFirepointDisable -= DisableShootingMode;
-//    return null;
-//}
-//set
-//{
-//    if (value != null)
-//    {
-//        value.OnShooting += value.CalculateTimeForNextShot;
-//    }
-//    Firepoint.OnFirepointDisable += DisableShootingMode;
-//    currentShootingManager = value;
-//}

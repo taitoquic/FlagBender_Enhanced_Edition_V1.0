@@ -5,30 +5,29 @@ using UnityEngine;
 public class FirepointTargetableManager: MonoBehaviour
 {
     public List<FirepointTargetable> firepointTargetables = new List<FirepointTargetable>();
+    FirepointTargetableSetTransform firepointTargetableSetTransform = new FirepointTargetableSetTransform();
     private void Start()
     {
-        StartCoroutine("AddFirepointTargetableAction");        
-    }
-    public void GetFirepointTransform(Transform firepointTransform)
-    {
-        foreach (FirepointTargetable firepointTargetable in firepointTargetables)
-        {
-            firepointTargetable.CurrentFirepointTransform = firepointTransform;
-        }
+        StartCoroutine("AddFirepointTargetableAction");
     }
     public void AddFirepointTargetable(FirepointTargetable currentFirepointTargetable)
     {
         firepointTargetables.Add(currentFirepointTargetable);
     }
-
+    public void SetFirepointTransforms()
+    {
+        firepointTargetableSetTransform.CurrentFirepointTargetables = firepointTargetables;
+    }
     public IEnumerator AddFirepointTargetableAction()
     {
         int indexChecked = 0;
+        FirepointAction currentAction;
         while (indexChecked != firepointTargetables.Count) 
         {
-            if (firepointTargetables[indexChecked].CurrentFirepointTransform != null)
+            currentAction = firepointTargetables[indexChecked].TargetableFirepointAction;
+            if (currentAction.CurrentFirepointTransform != null) 
             {
-                firepointTargetables[indexChecked].TargetableFirepointAction.OnFirepointActionValid = firepointTargetables[indexChecked].FirepointAction;
+                currentAction.OnFirepointActionValid = firepointTargetables[indexChecked].FirepointAction;
                 indexChecked++;
             }
             else

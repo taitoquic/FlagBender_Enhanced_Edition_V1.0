@@ -4,28 +4,15 @@ using UnityEngine;
 
 public class ShootingModeStand : ShootingMode
 {
-    //PlayerShootingManager currentShootingManager;
-
-    //public virtual PlayerShootingManager CurrentShootingManager
-    //{
-    //    get
-    //    {
-    //        currentShootingManager.OnShooting += currentShootingManager.CalculateTimeForNextShot;
-    //        Firepoint.OnFirepointDisable -= DisableShootingMode;
-    //        return null;
-    //    }
-    //    set
-    //    {
-    //        if (value != null)
-    //        {
-    //            value.OnShooting += value.CalculateTimeForNextShot;
-    //        }
-    //        Firepoint.OnFirepointDisable += DisableShootingMode;
-    //        currentShootingManager = value;
-    //    }
-    //}
-    //void DisableShootingMode()
-    //{
-    //    currentShootingManager = CurrentShootingManager;
-    //}
+    public override PlayerShootingManager CurrentShootingModeFirstShot
+    {
+        set
+        {
+            if (value != null)
+            {
+                value.CalculateTimeForNextShot();
+            }
+            base.CurrentShootingModeFirstShot = value;
+        }
+    }
 }

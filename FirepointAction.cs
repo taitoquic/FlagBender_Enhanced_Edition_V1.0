@@ -16,7 +16,7 @@ public class FirepointAction
         }
         set
         {
-            if(value != null)
+            if (value != null) 
             {
                 currentFirepointTransform = value;
             }

@@ -15,17 +15,6 @@ public class PlayerAimingManager : FirepointTargetable
             return aimingDirection;
         }
     }
-    public override Transform CurrentFirepointTransform
-    {
-        set
-        {
-            if (value != null)
-            {
-                aimingDirection.OnFirepointActionValid += MoveAimToDistance;
-            }
-            base.CurrentFirepointTransform = value;
-        }
-    }
     Vector2 MousePosition
     {
         get
@@ -40,23 +29,20 @@ public class PlayerAimingManager : FirepointTargetable
             return Mathf.Sign(transform.rotation.y);
         }
     }
-    float DistanceToAim
-    {
-        get
-        {
-            aimingDirection.OnFirepointActionValid -= MoveAimToDistance;
-            return distanceToAim;
-        }
-    }
     private void Update()
     {
         aimingDirection.ResolveFirepointAction();
+    }
+    public override void SetFirepointTransform(Transform firepointTransform)
+    {
+        base.SetFirepointTransform(firepointTransform);
+        MoveAimToDistance(firepointTransform);
     }
     void MoveAimToDistance(Transform currentFirepoint)
     {
         Ray aimRay = new Ray(currentFirepoint.position, currentFirepoint.right);
         aimTransform.parent = currentFirepoint;
-        aimTransform.position = aimRay.GetPoint(DistanceToAim);
+        aimTransform.position = aimRay.GetPoint(distanceToAim);
         aimTransform.localEulerAngles = Vector3.zero;
     }
     public override void FirepointAction(Transform firepointTransform)

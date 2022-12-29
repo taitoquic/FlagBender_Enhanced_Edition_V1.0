@@ -1,13 +1,13 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 public class FirepointsManager : MonoBehaviour
 {
     public GameObject[] firepoints = new GameObject[3];
-    FirepointTargetableManager newFirepointTransform;
-
-    delegate void FirepointEnableAction(int targetFirepointIndex);
-    FirepointEnableAction OnEnableFirepoint;
-
+    ShootingMode[] shootingModes = new ShootingMode[2] { new ShootingModeStand(), new ShootingModeStayable() };
+    int shootingModeIndex;
+    ShootingAction shootingAction = new ShootingAction();
+    FirepointShooting targetFirepointShooting = new FirepointShooting();
     FirepointTargetableManager FirepointTargetableManager
     {
         get
@@ -15,61 +15,34 @@ public class FirepointsManager : MonoBehaviour
             return GetComponent<FirepointTargetableManager>();
         }
     }
-    FirepointTargetableManager NewFirepointTransform
+    bool EnableFirepointTargetables
     {
         get
         {
-            Firepoint.OnFirepointAction -= newFirepointTransform.GetFirepointTransform;
-            return null;
-        }
-        set
-        {
-            if (value != null)
-            {
-                Firepoint.OnFirepointAction += NewFirepointTransformActions;
-                newFirepointTransform = value;
-            }
-        }
-    }
-    bool FirepointEnabled
-    {
-        get
-        {
-            OnEnableFirepoint = DisableTargetFirepoint;
+            FirepointTargetableManager.SetFirepointTransforms();
             return true;
         }
     }
-    bool FirepointDisabled
+    int ShootingModeIndex
     {
         get
         {
-            OnEnableFirepoint = EnableTargetFirepoint;
-            NewFirepointTransform = FirepointTargetableManager;
-            return false;
+            ShootingAnimation.OnShootingReady -= SetShootingMode;
+            return shootingModeIndex;
+        }
+        set
+        {
+            ShootingAnimation.OnShootingReady += SetShootingMode;
+            shootingModeIndex = value == 0 ? 0 : 1;
         }
     }
-    private void Start()
+    public void EnableFirepoint(int firepointIndex)
     {
-        OnEnableFirepoint = EnableTargetFirepoint;
-        newFirepointTransform = GetComponent<FirepointTargetableManager>();
-        //NewFirepointTransform = FirepointTargetableManager;
-        //NewFirepointTransform = GameManager.instance.firepointTargetableManager;
+        targetFirepointShooting.CurrentFirepoint = firepoints[firepointIndex];
+        ShootingModeIndex = firepointIndex;
     }
-    public void EnableFirepointsManager(int targetFirepointIndex)
+    void SetShootingMode()
     {
-        OnEnableFirepoint?.Invoke(targetFirepointIndex);
-    }
-    void EnableTargetFirepoint(int targetFirepointIndex)
-    {
-        firepoints[targetFirepointIndex].SetActive(FirepointEnabled);
-    }
-    void DisableTargetFirepoint(int targetFirepointIndex)
-    {
-        firepoints[targetFirepointIndex].SetActive(FirepointDisabled);
-    }
-    void NewFirepointTransformActions(Transform firepointTransform)
-    {
-        newFirepointTransform.GetFirepointTransform(firepointTransform);
-        newFirepointTransform = NewFirepointTransform;
+        shootingAction.CurrentShootingMode = shootingModes[ShootingModeIndex];
     }
 }

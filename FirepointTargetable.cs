@@ -8,20 +8,9 @@ public abstract class FirepointTargetable: MonoBehaviour
         GameManager.instance.firepointTargetableManager.AddFirepointTargetable(this);
     }
     public abstract FirepointAction TargetableFirepointAction { get; }
-
-    public virtual Transform CurrentFirepointTransform
+    public virtual void SetFirepointTransform(Transform firepointTransform)
     {
-        get
-        {
-            return TargetableFirepointAction.CurrentFirepointTransform;
-        }
-        set
-        {
-            if (value != null)
-            {
-                TargetableFirepointAction.CurrentFirepointTransform = value;
-            }
-        }
+        TargetableFirepointAction.CurrentFirepointTransform = firepointTransform;
     }
     public abstract void FirepointAction(Transform firepointTransform);
 }
