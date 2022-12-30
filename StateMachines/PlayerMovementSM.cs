@@ -9,7 +9,7 @@ public class PlayerMovementSM : StateMachineBehaviour
 
     public delegate void MovementAction();
     public static event MovementAction OnMovementSMAction;
-    ShootingAnimation BeginShootingAnimation
+    public virtual ShootingAnimation BeginShootingAnimation
     {
         get
         {

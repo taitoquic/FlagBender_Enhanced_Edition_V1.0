@@ -14,6 +14,7 @@ public class ShootingAction
         {
             PlayerMovementSM.OnMovementSMAction -= ExitWithoutShooting;
             PlayerMovement.OnPlayerPressFireButton -= PlayerShooting;
+            Debug.Log("bye");
             return currentShootingMode;
         }
         set
@@ -22,6 +23,7 @@ public class ShootingAction
             {
                 PlayerMovementSM.OnMovementSMAction += ExitWithoutShooting;
                 PlayerMovement.OnPlayerPressFireButton += PlayerShooting;
+                Debug.Log("hi");
             }
             else
             {

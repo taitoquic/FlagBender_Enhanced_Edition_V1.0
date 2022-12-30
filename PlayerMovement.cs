@@ -46,11 +46,11 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsOnAir", false);
         //PlayerOnAirSM.OnAirAnimation += PlayerOnAir;
     }
-    void PlayerOnAir(Animator targetAnimator)
-    {
-        targetAnimator.SetBool("IsOnAir", true);
-        //PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
-    }
+    //void PlayerOnAir(Animator targetAnimator)
+    //{
+    //    targetAnimator.SetBool("IsOnAir", true);
+    //    //PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
+    //}
     public void CheckVerticalSpeed(float verticalSpeed)
     {
         animator.SetFloat("VerticalSpeed", verticalSpeed);

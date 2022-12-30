@@ -15,12 +15,12 @@ public class FirepointsManager : MonoBehaviour
             return GetComponent<FirepointTargetableManager>();
         }
     }
-    bool EnableFirepointTargetables
+    FirepointShooting TargetFirepointShooting
     {
         get
         {
             FirepointTargetableManager.SetFirepointTransforms();
-            return true;
+            return targetFirepointShooting;
         }
     }
     int ShootingModeIndex
@@ -38,7 +38,7 @@ public class FirepointsManager : MonoBehaviour
     }
     public void EnableFirepoint(int firepointIndex)
     {
-        targetFirepointShooting.CurrentFirepoint = firepoints[firepointIndex];
+        TargetFirepointShooting.CurrentFirepoint = firepoints[firepointIndex];
         ShootingModeIndex = firepointIndex;
     }
     void SetShootingMode()

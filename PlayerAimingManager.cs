@@ -36,10 +36,11 @@ public class PlayerAimingManager : FirepointTargetable
     public override void SetFirepointTransform(Transform firepointTransform)
     {
         base.SetFirepointTransform(firepointTransform);
-        MoveAimToDistance(firepointTransform);
+        aimingDirection.OnFirepointActionValid += MoveAimToDistance;
     }
     void MoveAimToDistance(Transform currentFirepoint)
     {
+        aimingDirection.OnFirepointActionValid -= MoveAimToDistance;
         Ray aimRay = new Ray(currentFirepoint.position, currentFirepoint.right);
         aimTransform.parent = currentFirepoint;
         aimTransform.position = aimRay.GetPoint(distanceToAim);
