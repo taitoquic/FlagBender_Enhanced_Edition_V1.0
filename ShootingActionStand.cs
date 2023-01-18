@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShootingModeStand : ShootingMode
+public class ShootingActionStand : ShootingAction
 {
-    public override PlayerShootingManager CurrentShootingModeFirstShot
+    public override PlayerShootingManager PlayerFirstShot
     {
         set
         {
@@ -12,7 +12,7 @@ public class ShootingModeStand : ShootingMode
             {
                 value.CalculateTimeForNextShot();
             }
-            base.CurrentShootingModeFirstShot = value;
+            base.PlayerFirstShot = value;
         }
     }
 }

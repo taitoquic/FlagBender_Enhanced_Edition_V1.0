@@ -5,7 +5,6 @@ using UnityEngine;
 public class FirepointTargetableManager: MonoBehaviour
 {
     public List<FirepointTargetable> firepointTargetables = new List<FirepointTargetable>();
-    FirepointTargetableSetTransform firepointTargetableSetTransform = new FirepointTargetableSetTransform();
     private void Start()
     {
         StartCoroutine("AddFirepointTargetableAction");
@@ -14,9 +13,12 @@ public class FirepointTargetableManager: MonoBehaviour
     {
         firepointTargetables.Add(currentFirepointTargetable);
     }
-    public void SetFirepointTransforms()
+    public void GetFirepointTransform(Transform firepointTransform)
     {
-        firepointTargetableSetTransform.CurrentFirepointTargetables = firepointTargetables;
+        foreach (FirepointTargetable firepointTargetable in firepointTargetables)
+        {
+            firepointTargetable.SetFirepointTransform(firepointTransform);
+        }
     }
     public IEnumerator AddFirepointTargetableAction()
     {

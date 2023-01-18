@@ -2,60 +2,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShootingAction 
+public abstract class ShootingAction 
 {
-    ShootingMode currentShootingMode;
+    PlayerShootingManager playerFirstShot;
 
-    public delegate void ShootingActions();
-    public static event ShootingActions OnShootingActions;
-    public ShootingMode CurrentShootingMode
+    public delegate void DisableFirepoint();
+    public static event DisableFirepoint OnDisableFirepoint;
+
+    PlayerShootingManager PlayerLastShot
     {
         get
         {
-            PlayerMovementSM.OnMovementSMAction -= ExitWithoutShooting;
-            PlayerMovement.OnPlayerPressFireButton -= PlayerShooting;
-            Debug.Log("bye");
-            return currentShootingMode;
-        }
-        set
-        {
-            if (value != null)
-            {
-                PlayerMovementSM.OnMovementSMAction += ExitWithoutShooting;
-                PlayerMovement.OnPlayerPressFireButton += PlayerShooting;
-                Debug.Log("hi");
-            }
-            else
-            {
-                currentShootingMode = CurrentShootingMode;
-            }
-            currentShootingMode = value;
-        }
-    }
-    ShootingMode CurrentShootingModeShooting
-    {
-        get
-        {
-            PlayerShootingSM.OnShootingAction -= ExitShootingAction;
+            OnDisableFirepoint?.Invoke();
             return null;
         }
+    }
+
+    public virtual PlayerShootingManager PlayerFirstShot
+    {
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= FirstShot;
+            return playerFirstShot;
+        }
         set
         {
-            OnShootingActions?.Invoke();
-            PlayerShootingSM.OnShootingAction += ExitShootingAction;
+            PlayerShootingSM.OnShootingAction += FirstShot;
+            playerFirstShot = value;
         }
     }
-    void ExitWithoutShooting()
+    public virtual PlayerShootingManager PlayerAfterFirstShot
     {
-        CurrentShootingMode = null;
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= AfterFirstShot;
+            return PlayerLastShot;
+        }
+        set
+        {
+            PlayerShootingSM.OnShootingAction += AfterFirstShot;
+        }
     }
-    void PlayerShooting(PlayerShootingManager currenPlayerShooting)
+    void FirstShot()
     {
-        currentShootingMode.CurrentShootingManager = currenPlayerShooting;
-        CurrentShootingModeShooting = CurrentShootingMode;
+        PlayerAfterFirstShot = PlayerFirstShot;
     }
-    void ExitShootingAction()
+    void AfterFirstShot()
     {
-        currentShootingMode = CurrentShootingModeShooting;
+        playerFirstShot = PlayerAfterFirstShot;
     }
 }

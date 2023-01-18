@@ -2,25 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerJumpSM : StateMachineBehaviour
+public class PlayerJumpSM : PlayerOnAirSM
 {
-    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    public static event ActionInMovementState OnEnableAirFirepoint;
+    public override Animator CurrentAnimator
     {
-        animator.SetBool("IsJumping", false);
+        set
+        {
+            OnEnableAirFirepoint?.Invoke(StateIndex);
+            base.CurrentAnimator = value;
+        }
     }
-    //Animator EndJump
-    //{
-    //    set
-    //    {
-    //        if(value != null)
-    //        {
-    //            value.SetBool("IsJumping", false);
-    //        }
-    //    }
-    //}
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    base.OnStateExit(animator, stateInfo, layerIndex);
-    //    EndJump = animator;
-    //}
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        CurrentAnimator = animator;
+    }
 }

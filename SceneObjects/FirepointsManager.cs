@@ -4,10 +4,13 @@ using UnityEngine;
 public class FirepointsManager : MonoBehaviour
 {
     public GameObject[] firepoints = new GameObject[3];
-    ShootingMode[] shootingModes = new ShootingMode[2] { new ShootingModeStand(), new ShootingModeStayable() };
-    int shootingModeIndex;
-    ShootingAction shootingAction = new ShootingAction();
-    FirepointShooting targetFirepointShooting = new FirepointShooting();
+    int targetFirepointIndex;
+    bool targetFirepointEnabled = true;
+    FirepointTargetableAction firepointTargetableAction = new FirepointTargetableAction();
+    FirepointState currentFirepointState = new FirepointStateJumping();
+
+    delegate void FirepointAction(GameObject currentFirepoint);
+    FirepointAction OnEnableFirepoint;
     FirepointTargetableManager FirepointTargetableManager
     {
         get
@@ -15,34 +18,100 @@ public class FirepointsManager : MonoBehaviour
             return GetComponent<FirepointTargetableManager>();
         }
     }
-    FirepointShooting TargetFirepointShooting
+    FirepointStateJumping JumpingFirepointState
     {
         get
         {
-            FirepointTargetableManager.SetFirepointTransforms();
-            return targetFirepointShooting;
+            return (FirepointStateJumping)currentFirepointState;
         }
     }
-    int ShootingModeIndex
+    GameObject[] Firepoints
     {
         get
         {
-            ShootingAnimation.OnShootingReady -= SetShootingMode;
-            return shootingModeIndex;
+            TargetFirepointEnabled = !targetFirepointEnabled;
+            return firepoints;
+        }
+    }
+    int TargetFirepointIndex
+    {
+        get
+        {
+            FirepointState.OnFirepointDisable -= DisableTargetFirepoint;
+            return targetFirepointIndex;
         }
         set
         {
-            ShootingAnimation.OnShootingReady += SetShootingMode;
-            shootingModeIndex = value == 0 ? 0 : 1;
+            TargetFirepoint = Firepoints[value];
+            FirepointState.OnFirepointDisable += DisableTargetFirepoint;
+            targetFirepointIndex = value;
         }
     }
-    public void EnableFirepoint(int firepointIndex)
+    int JumpFirepointIndex
     {
-        TargetFirepointShooting.CurrentFirepoint = firepoints[firepointIndex];
-        ShootingModeIndex = firepointIndex;
+        set
+        {
+            OnEnableFirepoint = EnableJumpingFirepoint;
+            TargetFirepointIndex = value;
+        }
     }
-    void SetShootingMode()
+    bool TargetFirepointEnabled
     {
-        shootingAction.CurrentShootingMode = shootingModes[ShootingModeIndex];
+        get
+        {
+            FirepointActivableSM.OnEnableFirepoint -= SetStandardFirepoint;
+            PlayerJumpSM.OnEnableAirFirepoint -= SetJumpingFirepoint;
+            return targetFirepointEnabled;
+        }
+        set
+        {
+            if (!value)
+            {
+                FirepointActivableSM.OnEnableFirepoint += SetStandardFirepoint;
+                PlayerJumpSM.OnEnableAirFirepoint += SetJumpingFirepoint;
+                OnEnableFirepoint = EnableCurrentFirepoint;
+                firepointTargetableAction.CurrentFirepointTargetableManager = FirepointTargetableManager;
+            }
+            targetFirepointEnabled = value;
+        }
+    }
+    GameObject TargetFirepoint
+    {
+        get
+        {
+            return Firepoints[TargetFirepointIndex];
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.SetActive(TargetFirepointEnabled);
+                OnEnableFirepoint?.Invoke(value);
+            }
+        }
+    }
+    private void Start()
+    {
+        TargetFirepointEnabled = false;
+    }
+    void SetStandardFirepoint(int firepointIndex)
+    {
+        TargetFirepointIndex = firepointIndex;
+    }
+    void SetJumpingFirepoint(int firepointIndex)
+    {
+        JumpFirepointIndex = firepointIndex;
+    }
+    void EnableCurrentFirepoint(GameObject currentFirepoint)
+    {
+        currentFirepointState.CurrentFirepoint = currentFirepoint;
+    }
+    void EnableJumpingFirepoint(GameObject currentFirepoint)
+    {
+        JumpingFirepointState.JumpFirepoint = currentFirepoint;
+    }
+    void DisableTargetFirepoint()
+    {
+        TargetFirepoint.SetActive(targetFirepointEnabled);
     }
 }

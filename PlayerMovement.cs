@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove = 0f;
     bool jump = false;
 
+    delegate void PlayerMoves();
+    PlayerMoves OnJumpLanding;
+
     public delegate void PlayerAction(PlayerShootingManager shooting);
     public static event PlayerAction OnPlayerPressFireButton;
 
@@ -21,6 +24,32 @@ public class PlayerMovement : MonoBehaviour
             return playerShootingManager.HasPassedNecessaryTimeForShot;
         }
     }
+    bool Jump
+    {
+        get
+        {
+            OnJumpLanding -= EndJumping;
+            return jump;
+        }
+        set
+        {
+            if (value)
+            {
+                animator.SetBool("IsJumping", value);
+                OnJumpLanding += EndJumping;
+            }
+            jump = value;
+        }      
+    }
+    bool PlayerOnAir
+    {
+        get
+        {
+            animator.SetFloat("VerticalSpeed", 0);
+            OnJumpLanding?.Invoke();
+            return false;
+        }
+    }
     void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
@@ -28,8 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            jump = true;
-            animator.SetBool("IsJumping", true);
+            Jump = true;
         }
         if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
@@ -43,16 +71,18 @@ public class PlayerMovement : MonoBehaviour
     }
     public void PlayerLanding()
     {
-        animator.SetBool("IsOnAir", false);
-        //PlayerOnAirSM.OnAirAnimation += PlayerOnAir;
+        animator.SetBool("IsOnAir", PlayerOnAir);
     }
-    //void PlayerOnAir(Animator targetAnimator)
-    //{
-    //    targetAnimator.SetBool("IsOnAir", true);
-    //    //PlayerOnAirSM.OnAirAnimation -= PlayerOnAir;
-    //}
     public void CheckVerticalSpeed(float verticalSpeed)
     {
-        animator.SetFloat("VerticalSpeed", verticalSpeed);
+        if (verticalSpeed < -2 || verticalSpeed > 2)
+        {
+            animator.SetFloat("VerticalSpeed", verticalSpeed);
+            animator.SetBool("IsOnAir", true);
+        }
+    }
+    void EndJumping()
+    {
+        animator.SetBool("IsJumping", Jump);
     }
 }

@@ -43,7 +43,7 @@ public class CharacterController2D : MonoBehaviour
 					OnLandEvent.Invoke();
 			}
 		}
-		if (!m_Grounded || !wasGrounded)
+		if (!m_Grounded) 
 		{
 			OnCheckVerticalSpeed.Invoke(m_Rigidbody2D.velocity.y);
         }
