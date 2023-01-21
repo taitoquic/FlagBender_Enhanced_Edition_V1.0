@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ShootingAction 
+public class ShootingAction 
 {
-    PlayerShootingManager playerFirstShot;
+    public PlayerShootingManager currentShootingManager;
 
-    public delegate void DisableFirepoint();
-    public static event DisableFirepoint OnDisableFirepoint;
-
-    PlayerShootingManager PlayerLastShot
+    public delegate void ShootingActions();
+    public static event ShootingActions OnDisableFirepoint;
+    public PlayerShootingManager PlayerExitShooting
     {
         get
         {
@@ -17,38 +16,43 @@ public abstract class ShootingAction
             return null;
         }
     }
+    public PlayerShootingManager CurrentShootingManager
+    {
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= StandShot;
+            return currentShootingManager;
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.CalculateTimeForNextShot();
+            }
+            PlayerShootingSM.OnShootingAction += StandShot;
+            currentShootingManager = value;
+        }
+    }
+    public PlayerShootingManager ExitShootingSM
+    {
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= ExitShootingState;
+            return PlayerExitShooting;
+        }
+        set
+        {
+            PlayerShootingSM.OnShootingAction += ExitShootingState;
+        }
+    }
 
-    public virtual PlayerShootingManager PlayerFirstShot
+    void StandShot()
     {
-        get
-        {
-            PlayerShootingSM.OnShootingAction -= FirstShot;
-            return playerFirstShot;
-        }
-        set
-        {
-            PlayerShootingSM.OnShootingAction += FirstShot;
-            playerFirstShot = value;
-        }
+        ExitShootingSM = CurrentShootingManager;
     }
-    public virtual PlayerShootingManager PlayerAfterFirstShot
+    public void ExitShootingState()
     {
-        get
-        {
-            PlayerShootingSM.OnShootingAction -= AfterFirstShot;
-            return PlayerLastShot;
-        }
-        set
-        {
-            PlayerShootingSM.OnShootingAction += AfterFirstShot;
-        }
+        currentShootingManager = ExitShootingSM;
     }
-    void FirstShot()
-    {
-        PlayerAfterFirstShot = PlayerFirstShot;
-    }
-    void AfterFirstShot()
-    {
-        playerFirstShot = PlayerAfterFirstShot;
-    }
+
 }

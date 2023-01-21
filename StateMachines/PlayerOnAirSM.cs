@@ -4,9 +4,7 @@ using UnityEngine;
 
 public abstract class PlayerOnAirSM : PlayerMovementSM
 {
-    ShootingAction shootingModeOnAir = new ShootingActionStayable();
-
-    //public static event ActionInMovementState OnAirFirepointEnable;
+    Animator airShootingAnimator;
     public override int StateIndex
     {
         get
@@ -14,65 +12,45 @@ public abstract class PlayerOnAirSM : PlayerMovementSM
             return 2;
         }
     }
-    public override ShootingAction ShootingMode
+    ShootingActionStayable ShootingModeStayable
     {
         get
         {
-            return shootingModeOnAir;
+            return (ShootingActionStayable)ShootingModeStandard;
         }
     }
-    //string PlayerOnAir
-    //{
-    //    get
-    //    {
-    //        OnAirFirepointEnable?.Invoke(StateIndex);
-    //        return "IsOnAir";
-    //    }
-    //}
-    //Animator OnAirAnimator
-    //{
-    //    set
-    //    {
-    //        if (value != null)
-    //        {
-    //            value.SetBool(PlayerOnAir, true);
-    //        }
-    //    }
-    //}
-
+    Animator AirShootingAnimator
+    {
+        get
+        {
+            airShootingAnimator.SetBool("AirShooting", false);
+            ShootingAction.OnDisableFirepoint -= RemoveAirShootingAnimator;
+            return null;
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.SetBool("AirShooting", true);
+                ShootingAction.OnDisableFirepoint += RemoveAirShootingAnimator;
+            }
+            airShootingAnimator = value;
+        }
+    }
+    public override Animator ShootingAnimator
+    {
+        set
+        {
+            AirShootingAnimator = value;
+            base.ShootingAnimator = value;
+        }
+    }
+    public override void PlayerBeginToShooting(PlayerShootingManager playerShootingManager)
+    {
+        ShootingModeStayable.CurrentShootingManager = playerShootingManager;
+    }
+    void RemoveAirShootingAnimator()
+    {
+        airShootingAnimator = AirShootingAnimator;
+    }
 }
-//public override ShootingAction ShootingMode
-//{
-//    get
-//    {
-//        PlayerJumpSM.OnPlayerJumpSM -= PrepareAirShooting;
-//        PlayerFallSM.OnFallActionSM -= PrepareAirShooting;
-//        return shootingModeOnAir;
-//    }
-//}
-//bool PlayerIsOnAir
-//{
-//    get
-//    {
-//        OnAirEnableFirepoint?.Invoke(StateIndex);
-//        return true;
-//    }
-//}
-//public override Animator CurrentAnimator 
-//{
-//    set
-//    {
-//        if (value != null)
-//        {
-//            value.SetBool("IsOnAir", PlayerIsOnAir);
-//            PlayerJumpSM.OnPlayerJumpSM += PrepareAirShooting;
-//            PlayerFallSM.OnFallActionSM += PrepareAirShooting;
-//        }
-//    }
-//}
-//void PrepareAirShooting(Animator currentAnimator)
-//{
-//    ShootingMode.CurrentAnimator = currentAnimator;
-//}
-//public static event ActionInMovementState OnAirEnableFirepoint;
-//public delegate void AirMovementAnimatorAction(Animator currentAnimator);

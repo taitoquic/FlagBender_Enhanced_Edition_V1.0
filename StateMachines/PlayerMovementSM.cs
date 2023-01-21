@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovementSM : FirepointActivableSM
 {
     Animator currentAnimator;
-    ShootingAction shootingStandMode = new ShootingActionStand();
 
     public delegate void MovementAction();
     public static event MovementAction OnMovementSMAction;
@@ -18,11 +17,12 @@ public class PlayerMovementSM : FirepointActivableSM
             return 0;
         }
     }
-    public virtual ShootingAction ShootingMode
+    public ShootingAction ShootingModeStandard
     {
         get
         {
-            return shootingStandMode;
+            ShootingAnimator = CurrentAnimator;
+            return GameManager.instance.PlayerShootingMode;
         }
     }
     string ShootingTrigger
@@ -55,7 +55,7 @@ public class PlayerMovementSM : FirepointActivableSM
             currentAnimator = value;
         }
     }
-    Animator ShootingAnimator
+    public virtual Animator ShootingAnimator
     {
         get
         {
@@ -84,10 +84,9 @@ public class PlayerMovementSM : FirepointActivableSM
     {
         CurrentAnimator = null;
     }
-    void PlayerBeginToShooting(PlayerShootingManager playerShootingManager)
+    public virtual void PlayerBeginToShooting(PlayerShootingManager playerShootingManager)
     {
-        ShootingMode.PlayerFirstShot = playerShootingManager;
-        ShootingAnimator = CurrentAnimator;
+        ShootingModeStandard.CurrentShootingManager = playerShootingManager;
     }
     void EndShootingAnimation()
     {

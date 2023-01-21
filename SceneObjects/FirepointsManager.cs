@@ -6,7 +6,6 @@ public class FirepointsManager : MonoBehaviour
     public GameObject[] firepoints = new GameObject[3];
     int targetFirepointIndex;
     bool targetFirepointEnabled = true;
-    FirepointTargetableAction firepointTargetableAction = new FirepointTargetableAction();
     FirepointState currentFirepointState = new FirepointStateJumping();
 
     delegate void FirepointAction(GameObject currentFirepoint);
@@ -70,7 +69,7 @@ public class FirepointsManager : MonoBehaviour
                 FirepointActivableSM.OnEnableFirepoint += SetStandardFirepoint;
                 PlayerJumpSM.OnEnableAirFirepoint += SetJumpingFirepoint;
                 OnEnableFirepoint = EnableCurrentFirepoint;
-                firepointTargetableAction.CurrentFirepointTargetableManager = FirepointTargetableManager;
+                FirepointTargetableManager.SetAllFirepointTransforms();
             }
             targetFirepointEnabled = value;
         }

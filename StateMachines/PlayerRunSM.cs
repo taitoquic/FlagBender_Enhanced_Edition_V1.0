@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerRunSM : PlayerMovementSM
 {
-    ShootingAction shootingModeRun = new ShootingActionStayable();
     public override int StateIndex
     {
         get
@@ -12,11 +11,15 @@ public class PlayerRunSM : PlayerMovementSM
             return 1;
         }
     }
-    public override ShootingAction ShootingMode
+    ShootingActionStayable ShootingModeStayable
     {
         get
         {
-            return shootingModeRun;
+            return (ShootingActionStayable)ShootingModeStandard;
         }
+    }
+    public override void PlayerBeginToShooting(PlayerShootingManager playerShootingManager)
+    {
+        ShootingModeStayable.CurrentShootingManager = playerShootingManager;
     }
 }

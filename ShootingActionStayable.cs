@@ -4,33 +4,52 @@ using UnityEngine;
 
 public class ShootingActionStayable : ShootingAction
 {
-    public override PlayerShootingManager PlayerFirstShot
+    public new PlayerShootingManager CurrentShootingManager
     {
+        get
+        {
+            PlayerShootingSM.OnShootingAction -= BeginStayableMode;
+            return currentShootingManager;
+        }
         set
         {
             if (value != null)
             {
                 StayableShooting(value);
             }
-            base.PlayerFirstShot = value;
+            PlayerShootingSM.OnShootingAction += BeginStayableMode;
+            currentShootingManager = value;
         }
     }
-    public override PlayerShootingManager PlayerAfterFirstShot
+    PlayerShootingManager ShootingStayableMode
     {
         get
         {
             PlayerMovement.OnPlayerPressFireButton -= StayableShooting;
-            return base.PlayerAfterFirstShot;
+            OnDisableFirepoint -= StayableModeOff;
+            return currentShootingManager;
         }
         set
         {
-            PlayerMovement.OnPlayerPressFireButton += StayableShooting;
-            base.PlayerAfterFirstShot = value;
+            if (value != null) 
+            {
+                PlayerMovement.OnPlayerPressFireButton += StayableShooting;
+                OnDisableFirepoint += StayableModeOff;
+                ExitShootingSM = value;
+            }
         }
     }
-    void StayableShooting(PlayerShootingManager currentPlayerShooting)
+    void BeginStayableMode()
     {
-        currentPlayerShooting.Shot();
-        currentPlayerShooting.CalculateTimeForNextShot();
+        ShootingStayableMode = CurrentShootingManager;
+    }
+    void StayableShooting(PlayerShootingManager currentShootingManager)
+    {
+        currentShootingManager.Shot();
+        currentShootingManager.CalculateTimeForNextShot();
+    }
+    void StayableModeOff()
+    {
+        currentShootingManager = ShootingStayableMode;
     }
 }
