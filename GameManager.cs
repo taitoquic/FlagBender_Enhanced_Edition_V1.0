@@ -7,13 +7,27 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public List<IInitializable> initializables = new List<IInitializable>();
     public ShootingAction playerShootingMode = new ShootingActionStayable();
+    public List<IInitializable> Initializables
+    {
+        get
+        {
+            InitializableFeature.OnEndInitializables -= EndInitializable;
+            initializableFeature = null;
+            return null;
+        }
+        set
+        {
+            InitializableFeature.OnEndInitializables += EndInitializable;
+            initializableFeature.CurrentInitializables = value;
+        }
+    }
     private void Awake()
     {
         instance = this;
     }
     private void Start()
     {
-        initializableFeature.CurrentInitializables = initializables;
+        Initializables = initializables;
     }
     [Header("Scene Managers")]
     [Space]
@@ -21,4 +35,8 @@ public class GameManager : MonoBehaviour
     [Header("Features")]
     [Space]
     public InitializableFeature initializableFeature;
+    void EndInitializable()
+    {
+        initializables = Initializables;
+    }
 }

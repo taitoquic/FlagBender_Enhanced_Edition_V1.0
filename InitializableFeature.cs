@@ -6,10 +6,14 @@ public class InitializableFeature : MonoBehaviour
 {
     List<IInitializable> currentInitializables;
     bool firepointTargetablesReady = false;
+
+    public delegate void EndOfInitializables();
+    public static event EndOfInitializables OnEndInitializables;
     public List<IInitializable> CurrentInitializables
     {
         get
         {
+            OnEndInitializables?.Invoke();
             return null;
         }
         set
