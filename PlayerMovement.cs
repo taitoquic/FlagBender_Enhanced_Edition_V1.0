@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 40f;
     float horizontalMove = 0f;
     bool jump = false;
+    float distanceToBeginOnAir = 2.0f;
 
     delegate void PlayerMoves();
     PlayerMoves OnPlayerBeginOnAir;
@@ -25,40 +26,53 @@ public class PlayerMovement : MonoBehaviour
             return playerShootingManager.HasPassedNecessaryTimeForShot;
         }
     }
-    bool Jump
+    Animator JumpMovement
     {
         get
         {
             OnPlayerEndOnAir -= EndJumping;
-            return jump;
+            return animator;
         }
         set
         {
-            if (value)
+            if (value != null)
             {
-                animator.SetBool("IsJumping", value);
+                value.SetBool("IsJumping", true);
                 OnPlayerEndOnAir += EndJumping;
             }
-            jump = value;
-        }      
-    }
-    bool IsPlayerLanding
-    {
-        get
-        {
-            animator.SetFloat("VerticalSpeed", 0);
-            OnPlayerBeginOnAir = PlayerBeginOnAir;
-            OnPlayerEndOnAir -= PlayerEndOnAir;
-            return false;
         }
     }
-    bool IsPlayerOnAir
+    Animator LandMovement
     {
         get
         {
-            OnPlayerEndOnAir += PlayerEndOnAir;
             OnPlayerBeginOnAir -= PlayerBeginOnAir;
-            return true;
+            return animator;
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.SetBool("IsOnAir", false);
+                value.SetFloat("VerticalSpeed", 0);
+                OnPlayerBeginOnAir += PlayerBeginOnAir;
+            }
+        }
+    }
+    Animator AirMovement
+    {
+        get
+        {
+            OnPlayerEndOnAir -= PlayerEndOnAir;
+            return animator;
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.SetBool("IsOnAir", true);
+                OnPlayerEndOnAir += PlayerEndOnAir;
+            }
         }
     }
     private void Start()
@@ -72,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            Jump = true;
+            jump = true;
         }
         if (Input.GetButtonDown("Fire1") && IsWeaponReloaded)
         {
@@ -88,9 +102,13 @@ public class PlayerMovement : MonoBehaviour
     {
         OnPlayerEndOnAir?.Invoke();
     }
+    public void PlayerJump()
+    {
+        JumpMovement = animator;
+    }
     public void CheckVerticalSpeed(float verticalSpeed)
     {
-        if (verticalSpeed < -2 || verticalSpeed > 2)
+        if (verticalSpeed < -distanceToBeginOnAir || verticalSpeed > distanceToBeginOnAir) 
         {
             animator.SetFloat("VerticalSpeed", verticalSpeed);
             OnPlayerBeginOnAir?.Invoke();
@@ -98,14 +116,14 @@ public class PlayerMovement : MonoBehaviour
     }
     void PlayerEndOnAir()
     {
-        animator.SetBool("IsOnAir", IsPlayerLanding);
+        LandMovement = AirMovement;
     }
     void PlayerBeginOnAir()
     {
-        animator.SetBool("IsOnAir", IsPlayerOnAir);
+        AirMovement = LandMovement;
     }
     void EndJumping()
     {
-        animator.SetBool("IsJumping", Jump);
+        JumpMovement.SetBool("IsJumping", false);
     }
 }
