@@ -5,20 +5,20 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    ShootingAction playerShootingMode = new ShootingActionStayable();
-    public ShootingAction PlayerShootingMode
-    {
-        get
-        {
-            return playerShootingMode;
-        }
-    }
+    public List<IInitializable> initializables = new List<IInitializable>();
+    public ShootingAction playerShootingMode = new ShootingActionStayable();
     private void Awake()
     {
         instance = this;
     }
-    [Header("Board Managers")]
+    private void Start()
+    {
+        initializableFeature.CurrentInitializables = initializables;
+    }
+    [Header("Scene Managers")]
     [Space]
     public FirepointsManager firepointsManager;
-    public FirepointTargetableManager firepointTargetableManager;
+    [Header("Features")]
+    [Space]
+    public InitializableFeature initializableFeature;
 }

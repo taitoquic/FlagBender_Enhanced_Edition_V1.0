@@ -1,16 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public abstract class FirepointTargetable: MonoBehaviour
+using UnityEngine.Events;
+
+public abstract class FirepointTargetable: MonoBehaviour, IInitializable
 {
+    Transform firepointTransform;
+    public UnityEvent OnFirepointAction;
+    public virtual Transform FirepointTransform
+    {
+        get
+        {
+            return firepointTransform;
+        }
+        set
+        {
+            if (value != null)
+            {
+                firepointTransform = value;
+            }
+        }
+    }
+    public UnityEvent OnInitialize
+    {
+        get
+        {
+            return OnFirepointAction;
+        }
+    }
     private void Awake()
     {
-        GameManager.instance.firepointTargetableManager.AddFirepointTargetable(this);
+        GameManager.instance.firepointsManager.firepointTargetables.Add(this);
+        GameManager.instance.initializables.Add(this);
     }
-    public abstract FirepointAction TargetableFirepointAction { get; }
-    public virtual void SetFirepointTransform(Transform firepointTransform)
-    {
-        TargetableFirepointAction.CurrentFirepointTransform = firepointTransform;
-    }
-    public abstract void FirepointAction(Transform firepointTransform);
+    public abstract void ActionToInitialize();
 }

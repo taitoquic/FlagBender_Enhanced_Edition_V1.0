@@ -22,7 +22,7 @@ public class PlayerMovementSM : FirepointActivableSM
         get
         {
             ShootingAnimator = CurrentAnimator;
-            return GameManager.instance.PlayerShootingMode;
+            return GameManager.instance.playerShootingMode;
         }
     }
     string ShootingTrigger

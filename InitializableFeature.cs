@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class InitializableFeature : MonoBehaviour
+{
+    List<IInitializable> currentInitializables;
+    bool firepointTargetablesReady = false;
+    public List<IInitializable> CurrentInitializables
+    {
+        get
+        {
+            return null;
+        }
+        set
+        {
+            if (value != null)
+            {
+                FirepointTargetablesReady = firepointTargetablesReady;
+                currentInitializables = value;
+            }
+        }
+    }
+    bool FirepointTargetablesReady
+    {
+        get
+        {
+            Firepoint.OnFirepointAction -= FirstFirepointTargetEnabled;
+            return true;
+        }
+        set
+        {
+            if (value)
+            {
+                firepointTargetablesReady = FirepointTargetablesReady;
+            }
+            else
+            {
+                Firepoint.OnFirepointAction += FirstFirepointTargetEnabled;
+                StartCoroutine("WaitForFirepointTargetableCondition");
+            }
+        }
+    }
+    void AddListenerToInitializables()
+    {
+        foreach (IInitializable initializable in currentInitializables)
+        {
+            initializable.OnInitialize.AddListener(initializable.ActionToInitialize);
+        }
+        currentInitializables = CurrentInitializables;
+    }
+    IEnumerator WaitForFirepointTargetableCondition()
+    {
+        while (!firepointTargetablesReady)
+        {
+            yield return null;
+        }
+        AddListenerToInitializables();
+    }
+    void FirstFirepointTargetEnabled(Transform firepointTransform)
+    {
+        FirepointTargetablesReady = firepointTransform != null;
+    }
+}

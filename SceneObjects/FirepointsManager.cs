@@ -4,19 +4,14 @@ using UnityEngine;
 public class FirepointsManager : MonoBehaviour
 {
     public GameObject[] firepoints = new GameObject[3];
+    public List<FirepointTargetable> firepointTargetables = new List<FirepointTargetable>();
     int targetFirepointIndex;
     bool targetFirepointEnabled = true;
     FirepointState currentFirepointState = new FirepointStateJumping();
+    FirepointTargetableManager currentFirepointTargetableManager = new FirepointTargetableManager();
 
     delegate void FirepointAction(GameObject currentFirepoint);
     FirepointAction OnEnableFirepoint;
-    FirepointTargetableManager FirepointTargetableManager
-    {
-        get
-        {
-            return GetComponent<FirepointTargetableManager>();
-        }
-    }
     FirepointStateJumping JumpingFirepointState
     {
         get
@@ -69,7 +64,7 @@ public class FirepointsManager : MonoBehaviour
                 FirepointActivableSM.OnEnableFirepoint += SetStandardFirepoint;
                 PlayerJumpSM.OnEnableAirFirepoint += SetJumpingFirepoint;
                 OnEnableFirepoint = EnableCurrentFirepoint;
-                FirepointTargetableManager.SetAllFirepointTransforms();
+                currentFirepointTargetableManager.CurrentFirepointTargetables = firepointTargetables;
             }
             targetFirepointEnabled = value;
         }
