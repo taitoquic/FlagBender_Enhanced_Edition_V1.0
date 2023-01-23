@@ -11,7 +11,7 @@ public class FirepointStateJumping : FirepointState
         {
             PlayerFallSM.OnBeginToFallSM -= PlayerBeginToFall;
             PlayerMovementSM.OnShooting -= JumpingFirepointShooting;
-            return jumpFirepoint;
+            return ExitJumpFirepoint;
         }
         set
         {
@@ -22,18 +22,29 @@ public class FirepointStateJumping : FirepointState
             }
             else
             {
-                CurrentFirepoint = JumpFirepoint;
+                OnFirepointDisable -= EndJumping;
             }
             jumpFirepoint = value;
         }
     }
+    GameObject ExitJumpFirepoint
+    {
+        get
+        {
+            OnFirepointDisable += EndJumping;
+            return jumpFirepoint;
+        }
+    }
     void PlayerBeginToFall()
     {
-        JumpFirepoint = null;
+        CurrentFirepoint = JumpFirepoint;
     }
     void JumpingFirepointShooting()
     {
         ShootingFirepoint = JumpFirepoint;
-        jumpFirepoint = null;
+    }
+    void EndJumping()
+    {
+        JumpFirepoint = null;
     }
 }

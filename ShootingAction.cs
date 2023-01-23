@@ -54,5 +54,4 @@ public class ShootingAction
     {
         currentShootingManager = ExitShootingSM;
     }
-
 }

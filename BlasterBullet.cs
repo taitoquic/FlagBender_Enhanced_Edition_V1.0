@@ -11,7 +11,6 @@ public class BlasterBullet : MonoBehaviour
     {
         bulletRb.velocity = transform.right * bulletSpeed;
     }
-
     private void OnBecameInvisible()
     {
         Destroy(gameObject);

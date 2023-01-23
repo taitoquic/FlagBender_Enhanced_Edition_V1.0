@@ -26,7 +26,7 @@ public class ShootingActionStayable : ShootingAction
         get
         {
             PlayerMovement.OnPlayerPressFireButton -= StayableShooting;
-            OnDisableFirepoint -= StayableModeOff;
+            OnDisableFirepoint -= EndStayableMode;
             return currentShootingManager;
         }
         set
@@ -34,7 +34,7 @@ public class ShootingActionStayable : ShootingAction
             if (value != null) 
             {
                 PlayerMovement.OnPlayerPressFireButton += StayableShooting;
-                OnDisableFirepoint += StayableModeOff;
+                OnDisableFirepoint += EndStayableMode;
                 ExitShootingSM = value;
             }
         }
@@ -48,7 +48,7 @@ public class ShootingActionStayable : ShootingAction
         currentShootingManager.Shot();
         currentShootingManager.CalculateTimeForNextShot();
     }
-    void StayableModeOff()
+    void EndStayableMode()
     {
         currentShootingManager = ShootingStayableMode;
     }
