@@ -9,8 +9,11 @@ public abstract class FirepointActivableSM : StateMachineBehaviour
     public delegate void ActionInMovementState(int stateIndex);
     public static event ActionInMovementState OnEnableFirepoint;
 
+    public delegate void MovementAction();
+    public static event MovementAction OnEnterMovementSM;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        OnEnterMovementSM?.Invoke();
         OnEnableFirepoint?.Invoke(StateIndex);
     }
 }

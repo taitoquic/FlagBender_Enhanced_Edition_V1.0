@@ -43,12 +43,12 @@ public class FirepointState
     {
         get
         {
-            ShootingAction.OnDisableFirepoint -= DisableFirepointAtShooting;
+            FirepointActivableSM.OnEnterMovementSM -= DisableFirepointAtShooting;
             return ExitFirepoint;
         }
         set
         {
-            ShootingAction.OnDisableFirepoint += DisableFirepointAtShooting;
+            FirepointActivableSM.OnEnterMovementSM += DisableFirepointAtShooting;
         }
     }
     void ExitFirepointWithoutShooting()

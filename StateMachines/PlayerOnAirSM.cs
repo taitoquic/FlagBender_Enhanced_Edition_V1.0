@@ -24,7 +24,7 @@ public abstract class PlayerOnAirSM : PlayerMovementSM
         get
         {
             airShootingAnimator.SetBool("AirShooting", false);
-            ShootingAction.OnDisableFirepoint -= RemoveAirShootingAnimator;
+            ShootingAction.OnEndShootingState -= RemoveAirShootingAnimator;
             return null;
         }
         set
@@ -32,7 +32,7 @@ public abstract class PlayerOnAirSM : PlayerMovementSM
             if (value != null)
             {
                 value.SetBool("AirShooting", true);
-                ShootingAction.OnDisableFirepoint += RemoveAirShootingAnimator;
+                ShootingAction.OnEndShootingState += RemoveAirShootingAnimator;
             }
             airShootingAnimator = value;
         }

@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     [Header("Features")]
     [Space]
     public InitializableFeature initializableFeature;
+    public ChargableFeature chargableFeature;
     void EndInitializable()
     {
         initializables = Initializables;

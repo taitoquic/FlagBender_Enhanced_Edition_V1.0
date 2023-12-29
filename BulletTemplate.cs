@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "new Bullet", menuName ="Bullet")]
-public class BulletTemplate : ScriptableObject
+public abstract class BulletTemplate : ScriptableObject
 {
     public GameObject bulletPrefab;
     public float cadencyShot;
+
+    public abstract void ActionsToEquip();
+    public abstract void ActionsToUnequip();
 }

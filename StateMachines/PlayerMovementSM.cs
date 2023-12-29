@@ -6,7 +6,6 @@ public class PlayerMovementSM : FirepointActivableSM
 {
     Animator currentAnimator;
 
-    public delegate void MovementAction();
     public static event MovementAction OnMovementSMAction;
     public static event MovementAction OnShooting;
 
